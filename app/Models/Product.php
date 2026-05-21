@@ -6,9 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     protected $fillable = [
-        'category_id', 'supplier_id', 'name', 'sku',
-        'description', 'price', 'cost', 'stock',
-        'stock_min', 'unit', 'active'
+    'category_id', 'supplier_id', 'name', 'sku', 'barcode',
+    'lot', 'rotation', 'production_date', 'expiration_date',
+    'description', 'price', 'cost', 'stock', 'boxes',
+    'units_per_box', 'stock_min', 'unit', 'inventory_date',
+    'image_url', 'active'
+];
+
+    protected $casts = [
+        'production_date' => 'date',
+        'expiration_date' => 'date',
+        'inventory_date'  => 'date',
     ];
 
     public function category()
@@ -35,4 +43,25 @@ class Product extends Model
     {
         return $this->stock <= $this->stock_min;
     }
+
+    public function getRotationColorAttribute()
+    {
+        return match($this->rotation) {
+            'alta'  => '#16a34a',
+            'media' => '#ea580c',
+            'baja'  => '#ef4444',
+            default => '#374151',
+        };
+    }
+    public function rawMaterials()
+{
+    return $this->belongsToMany(RawMaterial::class, 'product_raw_materials')
+        ->withPivot('quantity_per_unit', 'notes')
+        ->withTimestamps();
+}
+
+public function productionItems()
+{
+    return $this->hasMany(ProductionOrderItem::class);
+}
 }

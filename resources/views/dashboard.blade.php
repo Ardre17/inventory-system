@@ -67,8 +67,17 @@
                    style="background-color:#be185d; color:white; border-radius:0.5rem; padding:1rem; text-align:center; font-weight:700; display:block; text-decoration:none;">
                     👥 Clientes
                 </a>
+                <a href="{{ route('production-orders.index') }}"
+                   style="background-color:#1d4ed8; color:white; border-radius:0.5rem; padding:1rem; text-align:center; font-weight:700; display:block; text-decoration:none;">
+                    🏭 Producción
+                </a>
+                <a href="{{ route('raw-materials.index') }}"
+                   style="background-color:#0f766e; color:white; border-radius:0.5rem; padding:1rem; text-align:center; font-weight:700; display:block; text-decoration:none;">
+                    🧪 Materias Primas
+                </a>
             </div>
 
         </div>
     </div>
 </x-app-layout>
+EOF
