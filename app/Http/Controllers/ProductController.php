@@ -8,10 +8,28 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with(['category', 'supplier'])->get();
-        return view('products.index', compact('products'));
+        $query = Product::with(['category', 'supplier']);
+
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('sku', 'like', '%' . $request->search . '%')
+                  ->orWhere('barcode', 'like', '%' . $request->search . '%')
+                  ->orWhere('lot', 'like', '%' . $request->search . '%');
+            });
+        }
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+        if ($request->filled('low_stock')) {
+            $query->whereColumn('stock', '<=', 'stock_min');
+        }
+
+        $products = $query->orderBy('name')->get();
+        $categories = Category::where('active', true)->orderBy('name')->get();
+        return view('products.index', compact('products', 'categories'));
     }
 
     public function create()

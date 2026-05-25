@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProductRawMaterial extends Model
 {
     protected $fillable = [
-        'product_id', 'raw_material_id', 'quantity_per_unit', 'notes'
+        'product_id', 'raw_material_id', 'quantity'
     ];
 
     public function product()

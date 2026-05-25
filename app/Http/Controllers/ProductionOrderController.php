@@ -6,6 +6,8 @@ use App\Models\ProductionOrderItem;
 use App\Models\Product;
 use App\Models\RawMaterial;
 use App\Models\ProductRawMaterial;
+use App\Models\Supply;
+use App\Models\SupplyMovement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -19,18 +21,18 @@ class ProductionOrderController extends Controller
 
     public function create()
     {
-        $products     = Product::where('active', true)->with('category', 'rawMaterials')->get();
-        $rawMaterials = RawMaterial::where('active', true)->get();
+        $products     = Product::where('active', true)->with('category')->get();
+        $rawMaterials = RawMaterial::all();
         return view('production-orders.create', compact('products', 'rawMaterials'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'date'          => 'required|date',
-            'products'      => 'required|array|min:1',
-            'products.*.id' => 'required|exists:products,id',
-            'products.*.qty'=> 'required|integer|min:1',
+            'date'           => 'required|date',
+            'products'       => 'required|array|min:1',
+            'products.*.id'  => 'required|exists:products,id',
+            'products.*.qty' => 'required|integer|min:1',
         ]);
 
         DB::transaction(function () use ($request) {
@@ -43,26 +45,20 @@ class ProductionOrderController extends Controller
             ]);
 
             foreach ($request->products as $item) {
-                $product = Product::findOrFail($item['id']);
+                if (empty($item['id']) || empty($item['qty'])) continue;
 
-                // Crear item de producción
+                $product  = Product::findOrFail($item['id']);
+                $quantity = (int) $item['qty'];
+
                 ProductionOrderItem::create([
                     'production_order_id' => $order->id,
                     'product_id'          => $product->id,
-                    'quantity'            => $item['qty'],
+                    'quantity'            => $quantity,
                     'sticker'             => $item['sticker'] ?? 'no_usa',
                     'precinto'            => $item['precinto'] ?? 'no_usa',
                     'label_type'          => $item['label_type'] ?? 'local',
                     'sticker_idioma'      => $item['sticker_idioma'] ?? 'no_usa',
                 ]);
-
-                // Descontar materia prima
-                $rawMaterials = ProductRawMaterial::where('product_id', $product->id)->get();
-                foreach ($rawMaterials as $rm) {
-                    $totalConsumed = $rm->quantity_per_unit * $item['qty'];
-                    RawMaterial::where('id', $rm->raw_material_id)
-                        ->decrement('stock', $totalConsumed);
-                }
             }
         });
 
@@ -80,14 +76,160 @@ class ProductionOrderController extends Controller
     {
         DB::transaction(function () use ($productionOrder) {
             foreach ($productionOrder->items as $item) {
-                // Sumar stock al producto terminado
-                $item->product->increment('stock', $item->quantity);
+                $quantity = $item->quantity;
+
+                // 1. Sumar stock producto terminado
+                $item->product->increment('stock', $quantity);
+
+                // 2. Descontar materia prima
+                $rawMaterials = ProductRawMaterial::where('product_id', $item->product_id)->get();
+                foreach ($rawMaterials as $rm) {
+                    $totalConsumed = $rm->quantity_per_unit * $quantity;
+                    RawMaterial::where('id', $rm->raw_material_id)
+                        ->decrement('stock', $totalConsumed);
+                }
+
+                // 3. Descontar suministros
+                $this->discountSupply($item, $quantity, $productionOrder->order_number);
             }
+
             $productionOrder->update(['status' => 'completed']);
         });
 
         return redirect()->route('production-orders.show', $productionOrder)
             ->with('success', 'Producción completada y stock actualizado');
+    }
+
+    private function discountSupply(ProductionOrderItem $item, int $quantity, string $reference)
+    {
+        // Sticker de tapa (buscar solo por type y variant)
+        if ($item->sticker && $item->sticker !== 'no_usa') {
+            $supply = Supply::where('type', 'sticker')
+                ->where('variant', $item->sticker)
+                ->first();
+            if ($supply) {
+                $supply->decrement('stock', $quantity);
+                SupplyMovement::create([
+                    'supply_id'     => $supply->id,
+                    'movement_type' => 'exit',
+                    'rolls'         => 0,
+                    'quantity'      => -$quantity,
+                    'reference'     => 'Orden #' . $reference,
+                    'notes'         => 'Producción: ' . $item->product->name,
+                ]);
+            }
+        }
+
+        // Precinto (buscar solo por type y variant)
+        if ($item->precinto && $item->precinto !== 'no_usa') {
+            $supply = Supply::where('type', 'precinto')
+                ->where('variant', $item->precinto)
+                ->first();
+            if ($supply) {
+                $supply->decrement('stock', $quantity);
+                SupplyMovement::create([
+                    'supply_id'     => $supply->id,
+                    'movement_type' => 'exit',
+                    'rolls'         => 0,
+                    'quantity'      => -$quantity,
+                    'reference'     => 'Orden #' . $reference,
+                    'notes'         => 'Producción: ' . $item->product->name,
+                ]);
+            }
+        }
+
+        // Etiqueta (buscar por product_id y variant porque cada producto tiene la suya)
+        if ($item->label_type && $item->label_type !== 'no_usa') {
+            $supply = Supply::where('type', 'etiqueta')
+                ->where('variant', $item->label_type)
+                ->where('product_id', $item->product_id)
+                ->first();
+            if ($supply) {
+                $supply->decrement('stock', $quantity);
+                SupplyMovement::create([
+                    'supply_id'     => $supply->id,
+                    'movement_type' => 'exit',
+                    'rolls'         => 0,
+                    'quantity'      => -$quantity,
+                    'reference'     => 'Orden #' . $reference,
+                    'notes'         => 'Producción: ' . $item->product->name,
+                ]);
+            }
+        }
+
+        // Sticker idioma
+        if ($item->sticker_idioma && $item->sticker_idioma !== 'no_usa') {
+            $supply = Supply::where('type', 'sticker_idioma')
+                ->where('variant', $item->sticker_idioma)
+                ->first();
+            if ($supply) {
+                $supply->decrement('stock', $quantity);
+                SupplyMovement::create([
+                    'supply_id'     => $supply->id,
+                    'movement_type' => 'exit',
+                    'rolls'         => 0,
+                    'quantity'      => -$quantity,
+                    'reference'     => 'Orden #' . $reference,
+                    'notes'         => 'Producción: ' . $item->product->name,
+                ]);
+            }
+        }
+    }
+
+    private function revertSupply(ProductionOrderItem $item, int $quantity, string $reference)
+    {
+        // Sticker tapa
+        if ($item->sticker && $item->sticker !== 'no_usa') {
+            $supply = Supply::where('type', 'sticker')
+                ->where('variant', $item->sticker)
+                ->first();
+            if ($supply) {
+                $supply->increment('stock', $quantity);
+                SupplyMovement::where('supply_id', $supply->id)
+                    ->where('reference', 'Orden #' . $reference)
+                    ->delete();
+            }
+        }
+
+        // Precinto
+        if ($item->precinto && $item->precinto !== 'no_usa') {
+            $supply = Supply::where('type', 'precinto')
+                ->where('variant', $item->precinto)
+                ->first();
+            if ($supply) {
+                $supply->increment('stock', $quantity);
+                SupplyMovement::where('supply_id', $supply->id)
+                    ->where('reference', 'Orden #' . $reference)
+                    ->delete();
+            }
+        }
+
+        // Etiqueta por producto
+        if ($item->label_type && $item->label_type !== 'no_usa') {
+            $supply = Supply::where('type', 'etiqueta')
+                ->where('variant', $item->label_type)
+                ->where('product_id', $item->product_id)
+                ->first();
+            if ($supply) {
+                $supply->increment('stock', $quantity);
+                SupplyMovement::where('supply_id', $supply->id)
+                    ->where('reference', 'Orden #' . $reference)
+                    ->delete();
+            }
+        }
+
+        // Sticker idioma
+        if ($item->sticker_idioma && $item->sticker_idioma !== 'no_usa') {
+            $supply = Supply::where('type', 'sticker_idioma')
+                ->where('variant', $item->sticker_idioma)
+                ->first();
+            if ($supply) {
+                $supply->increment('stock', $quantity);
+                SupplyMovement::where('supply_id', $supply->id)
+                    ->where('reference', 'Orden #' . $reference)
+                    ->delete();
+            }
+        }
     }
 
     public function edit(ProductionOrder $productionOrder)
@@ -102,8 +244,32 @@ class ProductionOrderController extends Controller
 
     public function destroy(ProductionOrder $productionOrder)
     {
-        $productionOrder->delete();
+        DB::transaction(function () use ($productionOrder) {
+            if ($productionOrder->status === 'completed') {
+                foreach ($productionOrder->items as $item) {
+                    $quantity = $item->quantity;
+
+                    // Devolver stock producto terminado
+                    $item->product->decrement('stock', $quantity);
+
+                    // Devolver materia prima
+                    $rawMaterials = ProductRawMaterial::where('product_id', $item->product_id)->get();
+                    foreach ($rawMaterials as $rm) {
+                        $totalConsumed = $rm->quantity_per_unit * $quantity;
+                        RawMaterial::where('id', $rm->raw_material_id)
+                            ->increment('stock', $totalConsumed);
+                    }
+
+                    // Devolver suministros y eliminar movimientos
+                    $this->revertSupply($item, $quantity, $productionOrder->order_number);
+                }
+            }
+
+            $productionOrder->items()->delete();
+            $productionOrder->delete();
+        });
+
         return redirect()->route('production-orders.index')
-            ->with('success', 'Orden eliminada correctamente');
+            ->with('success', 'Orden eliminada y stock revertido correctamente');
     }
 }

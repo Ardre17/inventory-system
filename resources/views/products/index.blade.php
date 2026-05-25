@@ -20,7 +20,42 @@
             </div>
             @endif
 
-            <div style="display:flex; flex-direction:column; gap:1rem;">
+            <form method="GET" action="{{ route('products.index') }}"
+      style="background:#fff;border-radius:10px;padding:16px 20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.08);display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+    <div style="flex:1;min-width:200px;">
+        <label style="display:block;font-size:12px;font-weight:600;color:#6b7280;margin-bottom:4px;">Buscar</label>
+        <input type="text" name="search" value="{{ request('search') }}"
+               placeholder="Nombre, SKU, código de barras, lote..."
+               autofocus
+               style="width:100%;padding:8px 12px;border:1px solid #d1d5db;border-radius:6px;font-size:14px;box-sizing:border-box;">
+    </div>
+    <div>
+        <label style="display:block;font-size:12px;font-weight:600;color:#6b7280;margin-bottom:4px;">Categoría</label>
+        <select name="category_id" style="padding:8px 12px;border:1px solid #d1d5db;border-radius:6px;font-size:14px;">
+            <option value="">Todas</option>
+            @foreach($categories as $cat)
+                <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;padding-bottom:2px;">
+        <input type="checkbox" name="low_stock" id="low_stock" value="1" {{ request('low_stock') ? 'checked' : '' }}
+               style="width:16px;height:16px;cursor:pointer;">
+        <label for="low_stock" style="font-size:13px;font-weight:600;color:#dc2626;cursor:pointer;">Solo stock bajo</label>
+    </div>
+    <div style="display:flex;gap:8px;">
+        <button type="submit"
+                style="background:#2563eb;color:#fff;padding:8px 18px;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;">
+            Buscar
+        </button>
+        <a href="{{ route('products.index') }}"
+           style="background:#f3f4f6;color:#374151;padding:8px 18px;border-radius:6px;font-size:14px;font-weight:600;text-decoration:none;">
+            Limpiar
+        </a>
+    </div>
+</form>
+
+<div style="display:flex; flex-direction:column; gap:1rem;">
                 @forelse($products as $product)
                 <div style="background:white; border-radius:0.75rem; box-shadow:0 1px 4px rgba(0,0,0,0.1); overflow:hidden; display:flex;">
 
