@@ -4,33 +4,29 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Supplier;
+use App\Models\Supply;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index(Request $request)
-    {
-        $query = Product::with(['category', 'supplier']);
+    public function index()
+{
+    $categories = Category::all();
+    $query = Product::with(['category', 'supplier']);
 
-        if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('sku', 'like', '%' . $request->search . '%')
-                  ->orWhere('barcode', 'like', '%' . $request->search . '%')
-                  ->orWhere('lot', 'like', '%' . $request->search . '%');
-            });
-        }
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
-        }
-        if ($request->filled('low_stock')) {
-            $query->whereColumn('stock', '<=', 'stock_min');
-        }
-
-        $products = $query->orderBy('name')->get();
-        $categories = Category::where('active', true)->orderBy('name')->get();
-        return view('products.index', compact('products', 'categories'));
+    if (request('category_id')) {
+        $query->where('category_id', request('category_id'));
     }
+    if (request('low_stock')) {
+        $query->whereColumn('stock', '<=', 'stock_min');
+    }
+    if (request('search')) {
+        $query->where('name', 'like', '%' . request('search') . '%');
+    }
+
+    $products = $query->get();
+    return view('products.index', compact('products', 'categories'));
+}
 
     public function create()
     {
@@ -48,7 +44,10 @@ class ProductController extends Controller
             'stock'       => 'required|integer|min:0',
             'stock_min'   => 'required|integer|min:0',
         ]);
-        Product::create($request->all());
+
+        $product = Product::create($request->all());
+        $this->createLabelsForProduct($product);
+
         return redirect()->route('products.index')
             ->with('success', 'Producto creado correctamente');
     }
@@ -84,5 +83,70 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         return redirect()->route('products.index');
+    }
+
+    public function generateLabels(Product $product)
+    {
+        $this->createLabelsForProduct($product);
+        return redirect()->route('products.index')
+            ->with('success', 'Etiquetas generadas para ' . $product->name);
+    }
+
+    private function createLabelsForProduct($product)
+    {
+        $category      = $product->category;
+        $isAlinosSmall = $category &&
+                         stripos($category->name, 'aliño') !== false &&
+                         stripos($category->name, 'pequeño') !== false;
+
+        if ($isAlinosSmall) {
+            $tipos = [
+                'cuello'    => 'Cuello',
+                'delantera' => 'Delantera',
+                'trasera'   => 'Trasera',
+            ];
+            foreach ($tipos as $variant => $label) {
+                $exists = Supply::where('type', 'etiqueta')
+                    ->where('variant', $variant)
+                    ->where('product_id', $product->id)
+                    ->exists();
+                if (!$exists) {
+                    Supply::create([
+                        'code'           => 'ETQ-' . strtoupper(substr(preg_replace('/\s+/', '', $product->name), 0, 6)) . '-' . strtoupper($variant),
+                        'name'           => $product->name . ' — ' . $label,
+                        'type'           => 'etiqueta',
+                        'variant'        => $variant,
+                        'stock'          => 0,
+                        'stock_min'      => 0,
+                        'units_per_roll' => 1000,
+                        'product_id'     => $product->id,
+                    ]);
+                }
+            }
+        } else {
+            $variantes = [
+                'local'     => 'Local',
+                'ingles'    => 'Inglés',
+                'portugues' => 'Portugués',
+            ];
+            foreach ($variantes as $variant => $label) {
+                $exists = Supply::where('type', 'etiqueta')
+                    ->where('variant', $variant)
+                    ->where('product_id', $product->id)
+                    ->exists();
+                if (!$exists) {
+                    Supply::create([
+                        'code'           => 'ETQ-' . strtoupper(substr(preg_replace('/\s+/', '', $product->name), 0, 6)) . '-' . strtoupper($variant),
+                        'name'           => $product->name . ' — ' . $label,
+                        'type'           => 'etiqueta',
+                        'variant'        => $variant,
+                        'stock'          => 0,
+                        'stock_min'      => 0,
+                        'units_per_roll' => 1000,
+                        'product_id'     => $product->id,
+                    ]);
+                }
+            }
+        }
     }
 }

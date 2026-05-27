@@ -76,6 +76,12 @@
                             <div style="display:flex; gap:0.5rem;">
                                 <a href="{{ route('products.edit', $product) }}"
                                    style="background-color:#facc15; color:white; padding:0.25rem 0.75rem; border-radius:0.375rem; font-size:0.875rem; text-decoration:none;">✏️</a>
+                                <a href="{{ route('products.raw-materials', $product) }}"
+                                   style="background-color:#0f766e; color:white; padding:0.25rem 0.75rem; border-radius:0.375rem; font-size:0.875rem; text-decoration:none;">🧪</a>
+                                <form action="{{ route('products.generate-labels', $product) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    <button type="submit" style="background-color:#7c3aed; color:white; padding:0.25rem 0.75rem; border-radius:0.375rem; font-size:0.875rem;">🏷️</button>
+                                </form>
                                 <form action="{{ route('products.destroy', $product) }}" method="POST"
                                       onsubmit="return confirm('¿Eliminar?')">
                                     @csrf @method('DELETE')

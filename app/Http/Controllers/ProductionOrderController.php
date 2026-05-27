@@ -82,12 +82,15 @@ class ProductionOrderController extends Controller
                 $item->product->increment('stock', $quantity);
 
                 // 2. Descontar materia prima
-                $rawMaterials = ProductRawMaterial::where('product_id', $item->product_id)->get();
-                foreach ($rawMaterials as $rm) {
-                    $totalConsumed = $rm->quantity_per_unit * $quantity;
-                    RawMaterial::where('id', $rm->raw_material_id)
-                        ->decrement('stock', $totalConsumed);
-                }
+                // Descontar materia prima SOLO al completar
+$rawMaterials = ProductRawMaterial::where('product_id', $item->product_id)->get();
+foreach ($rawMaterials as $rm) {
+    $totalConsumed = $rm->quantity_per_unit * $quantity;
+    RawMaterial::where('id', $rm->raw_material_id)
+        ->decrement('stock', $totalConsumed);
+    // Descontar también del stock asignado al producto
+    $rm->decrement('stock', $totalConsumed);
+}
 
                 // 3. Descontar suministros
                 $this->discountSupply($item, $quantity, $productionOrder->order_number);

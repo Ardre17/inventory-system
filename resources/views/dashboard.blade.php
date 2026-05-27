@@ -55,6 +55,7 @@
                    style="background-color:#7c3aed; color:white; border-radius:0.5rem; padding:1rem; text-align:center; font-weight:700; display:block; text-decoration:none;">
                     🧾 Órdenes
                 </a>
+
                 <a href="{{ route('inventory-periods.index') }}"
                    style="background-color:#ea580c; color:white; border-radius:0.5rem; padding:1rem; text-align:center; font-weight:700; display:block; text-decoration:none;">
                     📋 Inventario

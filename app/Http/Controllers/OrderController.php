@@ -189,6 +189,107 @@ class OrderController extends Controller
         ]);
     }
 
+    public function importForm()
+    {
+        return view('orders.import');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'csv_file'   => 'required|file|mimes:csv,txt',
+            'type'       => 'required|in:sale,purchase',
+            'order_type' => 'required|in:local,encomienda,supermercado',
+        ]);
+
+        $file   = $request->file('csv_file');
+        $rows   = array_map('str_getcsv', file($file->getPathname()));
+        $errors = [];
+        $items  = [];
+        $subtotal = 0;
+
+        foreach ($rows as $i => $row) {
+            if ($i === 0 && !is_numeric($row[1] ?? null)) continue;
+            if (empty($row[0])) continue;
+
+            $sku = trim($row[0]);
+            $qty = (int) trim($row[1] ?? 1);
+
+            $product = Product::where('sku', $sku)
+                ->orWhere('barcode', $sku)
+                ->first();
+
+            if (!$product) {
+                $errors[] = "Fila " . ($i + 1) . ": SKU \"{$sku}\" no encontrado";
+                continue;
+            }
+
+            $sub       = $product->price * $qty;
+            $subtotal += $sub;
+            $items[]   = [
+                'product_id'      => $product->id,
+                'quantity'        => $qty,
+                'quantity_sent'   => 0,
+                'dispatch_status' => 'pending',
+                'unit_price'      => $product->price,
+                'subtotal'        => $sub,
+            ];
+        }
+
+        if (!empty($errors)) {
+            return back()->with('error', 'Errores encontrados: ' . implode(' | ', $errors));
+        }
+
+        if (empty($items)) {
+            return back()->with('error', 'No se encontraron productos válidos en el CSV');
+        }
+
+        DB::transaction(function () use ($request, $items, $subtotal) {
+            $tax   = $subtotal * 0.15;
+            $total = $subtotal + $tax;
+
+            $order = Order::create([
+                'order_number'        => 'ORD-' . strtoupper(uniqid()),
+                'user_id'             => auth()->id(),
+                'type'                => $request->type,
+                'order_type'          => $request->order_type,
+                'status'              => 'pending',
+                'client_supplier'     => $request->client_supplier,
+                'client_order_number' => $request->client_order_number,
+                'barcode'             => 'ORD-' . strtoupper(uniqid()),
+                'subtotal'            => $subtotal,
+                'tax'                 => $tax,
+                'total'               => $total,
+                'notes'               => $request->notes,
+            ]);
+
+            $order->items()->createMany($items);
+        });
+
+        return redirect()->route('orders.index')
+            ->with('success', 'Orden importada con ' . count($items) . ' productos');
+    }
+
+    public function csvTemplate()
+    {
+        $products = Product::take(3)->get();
+        $csv = "sku,cantidad\n";
+        foreach ($products as $p) {
+            $csv .= ($p->sku ?: $p->barcode) . ",1\n";
+        }
+        return response($csv, 200, [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=plantilla_orden.csv',
+        ]);
+    }
+
+    public function pdf(Order $order)
+{
+    $order->load('items.product');
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('orders.pdf', compact('order'))
+        ->setPaper('a4', 'landscape');
+    return $pdf->download('orden-' . $order->order_number . '.pdf');
+}
     public function edit(Order $order)
     {
         return redirect()->route('orders.index');

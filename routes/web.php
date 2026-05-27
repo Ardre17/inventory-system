@@ -8,6 +8,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\InventoryPeriodController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProductionOrderController;
+use App\Http\Controllers\ProductRawMaterialController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\SupplyController;
 use App\Models\Product;
@@ -47,7 +48,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('orders/{order}/dispatch', [OrderController::class, 'dispatch'])->name('orders.dispatch');
     Route::get('orders/barcode', [OrderController::class, 'findByBarcode'])->name('orders.barcode');
 
-    // Suministros
     Route::get('supplies', [SupplyController::class, 'index'])->name('supplies.index');
     Route::get('supplies/{supply}', [SupplyController::class, 'show'])->name('supplies.show');
     Route::post('supplies/{supply}/entry', [SupplyController::class, 'entry'])->name('supplies.entry');
@@ -56,11 +56,33 @@ Route::middleware(['auth'])->group(function () {
     Route::get('product-raw-materials', [App\Http\Controllers\ProductRawMaterialController::class, 'index'])->name('product-raw-materials.index');
     Route::get('product-raw-materials/{product}/edit', [App\Http\Controllers\ProductRawMaterialController::class, 'edit'])->name('product-raw-materials.edit');
     Route::patch('product-raw-materials/{product}', [App\Http\Controllers\ProductRawMaterialController::class, 'update'])->name('product-raw-materials.update');
-    Route::patch('orders/{order}/items/{item}', [App\Http\Controllers\OrderController::class, 'updateItem'])->name('orders.items.update');
+    Route::patch('orders/{order}/items/{item}', [OrderController::class, 'updateItem'])->name('orders.items.update');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('orders/{order}/pdf', [OrderController::class, 'pdf'])->name('orders.pdf');
+    Route::get('orders-import', [OrderController::class, 'importForm'])->name('orders.import.form');
+    Route::post('orders-import', [OrderController::class, 'import'])->name('orders.import');
+    Route::get('orders-csv-template', [OrderController::class, 'csvTemplate'])->name('orders.csv-template');
     Route::post('orders/{order}/update-item', [OrderController::class, 'updateItem'])->name('orders.update-item');
+
+    Route::get('products/{product}/raw-materials', [ProductRawMaterialController::class, 'index'])->name('products.raw-materials');
+    Route::post('products/{product}/raw-materials', [ProductRawMaterialController::class, 'store'])->name('products.raw-materials.store');
+    Route::delete('products/{product}/raw-materials/{rawMaterial}', [ProductRawMaterialController::class, 'destroy'])->name('products.raw-materials.destroy');
+    Route::post('products/{product}/generate-labels', [ProductController::class, 'generateLabels'])->name('products.generate-labels');
 });
 
+// Importación masiva de órdenes - PÚBLICA (sin auth)
+Route::get('orders/import', [App\Http\Controllers\OrderImportController::class, 'index'])->name('orders.import');
+Route::post('orders/import', [App\Http\Controllers\OrderImportController::class, 'import'])->name('orders.import.store');
+Route::get('orders/import/template', [App\Http\Controllers\OrderImportController::class, 'downloadTemplate'])->name('orders.import.template');
+
+// Pruebas
+Route::get('/prueba-final', function() {
+    return 'FUNCIONA PERFECTO';
+});
+
+Route::get('/prueba-import', [App\Http\Controllers\OrderImportController::class, 'index']);
+
+// Cargar rutas de auth
 require __DIR__.'/auth.php';

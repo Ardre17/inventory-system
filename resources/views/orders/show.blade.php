@@ -126,16 +126,19 @@
 
             <div style="text-align:right; margin-top:1rem; font-size:0.9rem;">
                 <div>Subtotal: <strong>${{ number_format($order->subtotal, 2) }}</strong></div>
-                <div>Impuesto (15%): <strong>${{ number_format($order->tax, 2) }}</strong></div>
+                <div>IGV (18%): <strong>${{ number_format($order->subtotal * 0.18, 2) }}</strong></div>
                 <div style="font-size:1.2rem; color:#7c3aed; margin-top:0.25rem;">
-                    Total: <strong>${{ number_format($order->total, 2) }}</strong>
+                    Total: <strong>${{ number_format($order->subtotal * 1.18, 2) }}</strong>
                 </div>
             </div>
         </div>
 
         <a href="{{ route('orders.index') }}"
            style="background-color:#d1d5db; color:#374151; padding:0.5rem 1.5rem; border-radius:0.5rem; font-weight:600; text-decoration:none;">
-            ← Volver
+            ← Volver</a>
+        <a href="{{ route('orders.pdf', $order) }}"
+           style="background-color:#dc2626; color:white; padding:0.5rem 1.5rem; border-radius:0.5rem; font-weight:600; text-decoration:none;">
+            🖨️ Descargar PDF
         </a>
     </div>
 
