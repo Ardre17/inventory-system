@@ -2,7 +2,7 @@ FROM php:8.4-cli
 
 RUN apt-get update && apt-get install -y \
     libpq-dev libzip-dev zip unzip git curl \
-    && docker-php-ext-install pdo pdo_pgsql zip mbstring
+    && docker-php-ext-install pdo pdo_pgsql zip
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -12,8 +12,6 @@ WORKDIR /app
 COPY . .
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
-
-RUN cp .env.example .env || true
 
 EXPOSE 8000
 
