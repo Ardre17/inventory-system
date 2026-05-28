@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: distan-inventory
+    env: php
+    buildCommand: composer install --no-dev && php artisan config:clear && php artisan migrate --force && php artisan storage:link
+    startCommand: php artisan serve --host=0.0.0.0 --port=$PORT
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_DEBUG
+        value: false
+      - key: SESSION_DRIVER
+        value: file
+      - key: CACHE_STORE
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: DB_CONNECTION
+        value: pgsql
+
+databases:
+  - name: distan-db
+    databaseName: distan
+    user: distan
