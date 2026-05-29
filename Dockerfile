@@ -12,8 +12,7 @@ WORKDIR /app
 COPY . .
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
-RUN cp .env.example .env
 
 EXPOSE 8000
 
-CMD php artisan key:generate --force && php artisan config:clear && php artisan migrate:fresh --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+CMD php artisan config:clear && php artisan migrate:fresh --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
