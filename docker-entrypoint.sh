@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-cat > /app/.env << ENVFILE
-APP_KEY=${APP_KEY}
+cat > /app/.env << 'ENVFILE'
+APP_KEY=base64:dGVzdGtleXRlc3RrZXl0ZXN0a2V5dGVzdGtleXQ=
 APP_ENV=${APP_ENV:-production}
 APP_DEBUG=${APP_DEBUG:-false}
 APP_URL=${APP_URL}
