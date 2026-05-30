@@ -13,6 +13,14 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
+RUN echo "APP_KEY=base64:u3Z8K2mP9xQvR1nL4wY7hJ6fE0dA5cB2iT3oN8sM1q=" > .env && \
+    echo "APP_ENV=production" >> .env && \
+    echo "APP_DEBUG=false" >> .env && \
+    echo "SESSION_DRIVER=file" >> .env && \
+    echo "CACHE_STORE=file" >> .env && \
+    echo "QUEUE_CONNECTION=sync" >> .env && \
+    echo "LOG_CHANNEL=stderr" >> .env
+
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
