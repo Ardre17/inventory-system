@@ -13,7 +13,7 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-RUN echo "APP_KEY=base64:u3Z8K2mP9xQvR1nL4wY7hJ6fE0dA5cB2iT3oN8sM1q=" > .env && \
+RUN echo "APP_KEY=base64:bGFyYXZlbGtleWxhcmF2ZWxrZXlsYXJhdmVsa2V5MzI=" > .env && \
     echo "APP_ENV=production" >> .env && \
     echo "APP_DEBUG=false" >> .env && \
     echo "SESSION_DRIVER=file" >> .env && \
