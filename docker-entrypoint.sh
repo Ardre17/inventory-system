@@ -1,19 +1,26 @@
 #!/bin/sh
 set -e
 
-# Agregar variables de DB al .env existente
-printf "APP_KEY=base64:bGFyYXZlbGtleWxhcmF2ZWxrZXlsYXJhdmVsa2V5MzI=\n" >> /app/.env
-printf "DB_CONNECTION=pgsql\n" >> /app/.env
-printf "DB_HOST=%s\n" "$DB_HOST" >> /app/.env
-printf "DB_PORT=%s\n" "${DB_PORT:-5432}" >> /app/.env
-printf "DB_DATABASE=%s\n" "$DB_DATABASE" >> /app/.env
-printf "DB_USERNAME=%s\n" "$DB_USERNAME" >> /app/.env
-printf "DB_PASSWORD=%s\n" "$DB_PASSWORD" >> /app/.env
-printf "APP_URL=https://inventory-system-production-a650.up.railway.app\n" >> /app/.env
+cat > /app/.env << ENVEOF
+APP_KEY=base64:bGFyYXZlbGtleWxhcmF2ZWxrZXlsYXJhdmVsa2V5MzI=
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://inventory-system-production-a650.up.railway.app
+DB_CONNECTION=pgsql
+DB_HOST=$DB_HOST
+DB_PORT=${DB_PORT:-5432}
+DB_DATABASE=$DB_DATABASE
+DB_USERNAME=$DB_USERNAME
+DB_PASSWORD=$DB_PASSWORD
+SESSION_DRIVER=file
+CACHE_STORE=file
+QUEUE_CONNECTION=sync
+LOG_CHANNEL=stderr
+ENVEOF
 
-echo "=== .env final ==="
+echo "=== .env ==="
 cat /app/.env
-echo "=================="
+echo "============"
 
 php artisan config:clear
 php artisan migrate:fresh --force
