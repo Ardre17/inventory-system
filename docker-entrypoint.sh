@@ -16,6 +16,12 @@ printf "CACHE_STORE=file\n" >> /app/.env
 printf "QUEUE_CONNECTION=sync\n" >> /app/.env
 printf "LOG_CHANNEL=stderr\n" >> /app/.env
 
+echo "--- .env creado ---"
+cat /app/.env
+echo "-------------------"
+
 php artisan config:clear
+php artisan cache:clear
+
 php artisan migrate:fresh --force
 php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
