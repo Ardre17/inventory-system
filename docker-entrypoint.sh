@@ -18,10 +18,9 @@ QUEUE_CONNECTION=sync
 LOG_CHANNEL=stderr
 ENVEOF
 
-echo "=== .env ==="
-cat /app/.env
-echo "============"
-
 php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
+php artisan route:clear
 php artisan migrate:fresh --force
 php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
