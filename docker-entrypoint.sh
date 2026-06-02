@@ -1,26 +1,30 @@
-#!/bin/sh
-set -e
+FROM php:8.4-cli
 
-cat > /app/.env << ENVEOF
-APP_KEY=base64:Hr95U5K6CoBgi6vOWWn6Ei4COZtbM22nemOlwJMzoOc=
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://inventory-system-production-a650.up.railway.app
-DB_CONNECTION=pgsql
-DB_HOST=$DB_HOST
-DB_PORT=${DB_PORT:-5432}
-DB_DATABASE=$DB_DATABASE
-DB_USERNAME=$DB_USERNAME
-DB_PASSWORD=$DB_PASSWORD
-SESSION_DRIVER=file
-CACHE_STORE=file
-QUEUE_CONNECTION=sync
-LOG_CHANNEL=stderr
-ENVEOF
+RUN apt-get update && apt-get install -y \
+    libpq-dev libzip-dev zip unzip git curl nodejs npm \
+    && docker-php-ext-install pdo pdo_pgsql zip
 
-php artisan config:clear
-php artisan cache:clear
-php artisan view:clear
-php artisan route:clear
-php artisan migrate:fresh --force
-php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+WORKDIR /app
+COPY . .
+
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN npm install && npm run build
+
+RUN echo "APP_KEY=base64:Hr95U5K6CoBgi6vOWWn6Ei4COZtbM22nemOlwJMzoOc=" > .env && \
+    echo "APP_ENV=production" >> .env && \
+    echo "APP_DEBUG=false" >> .env && \
+    echo "SESSION_DRIVER=file" >> .env && \
+    echo "CACHE_STORE=file" >> .env && \
+    echo "QUEUE_CONNECTION=sync" >> .env && \
+    echo "LOG_CHANNEL=stderr" >> .env
+
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+EXPOSE 8000
+
+ENTRYPOINT ["docker-entrypoint.sh"]
