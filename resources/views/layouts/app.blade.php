@@ -7,7 +7,7 @@
     <title>DISTAN - {{ config('app.name') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
     <style>
         * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
         body { margin: 0; background: #f1f5f9; }
