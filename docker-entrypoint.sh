@@ -2,7 +2,7 @@
 set -e
 
 cat > /app/.env << ENVEOF
-APP_KEY=base64:l1mEBLwE9EG9EapU9SRiBcf5cUuw7CjymBkAnjm1spI=
+APP_KEY=base64:Hr95U5K6CoBgi6vOWWn6Ei4COZtbM22nemOlwJMzoOc=
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://inventory-system-production-a650.up.railway.app
