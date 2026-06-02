@@ -11,7 +11,7 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 WORKDIR /app
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN echo "build-$(date +%s)" && composer install --no-dev --optimize-autoloader --no-interaction
 
 RUN echo "APP_KEY=base64:bGFyYXZlbGtleWxhcmF2ZWxrZXlsYXJhdmVsa2V5MzI=" > .env && \
     echo "APP_ENV=production" >> .env && \
