@@ -126,20 +126,13 @@
             </thead>
             <tbody>
                 @foreach($order->items as $item)
-                @php
+              @php
                     $precioImp = $item->unit_price * 1.18;
-                    $totalNeto = $item->unit_price * $item->quantity;
-                    $totalImp  = $precioImp * $item->quantity;
-
-                    if ($item->quantity_sent == 0) {
-                        $statusClass = 'status-none';
-                    } elseif ($item->quantity_sent < $item->quantity) {
-                        $statusClass = 'status-partial';
-                    } else {
-                        $statusClass = 'status-complete';
-                    }
+                    $totalNeto = $item->unit_price * $item->quantity_sent;
+                    $totalImp  = $precioImp * $item->quantity_sent;
+                    $noEnviado = $item->dispatch_status === 'none';
                 @endphp
-                <tr>
+                                <tr>
                     @if($order->order_type === 'supermercado')
                     <td style="font-weight:700; color:#1e3a8a;">{{ $item->pallet_number ?? '—' }}</td>
                     <td>{{ $item->pucho ?? 0 }}</td>
