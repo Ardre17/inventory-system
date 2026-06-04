@@ -119,63 +119,69 @@ class OrderController extends Controller
 
 
    public function dispatch(Request $request, Order $order)
-   {
-       $request->validate([
-           'item_id'                  => 'required|exists:order_items,id',
-           'quantity_sent'            => 'required|integer|min:0',
-           'pallet_number'            => 'nullable|string|max:50',
-           'pucho'                    => 'nullable|integer|min:0',
-           'dispatch_expiration_date' => 'nullable|date',
-       ]);
+{
+    $request->validate([
+        'item_id'                  => 'required|exists:order_items,id',
+        'quantity_sent'            => 'required|integer|min:0',
+        'pallet_number'            => 'nullable|string|max:50',
+        'pucho'                    => 'nullable|integer|min:0',
+        'dispatch_expiration_date' => 'nullable|date',
+    ]);
 
+    $item = OrderItem::findOrFail($request->item_id);
 
-       $item = OrderItem::findOrFail($request->item_id);
+    DB::transaction(function () use ($item, $request, $order) {
+        $sent = $request->quantity_sent;
 
+        if ($item->quantity_sent > 0) {
+            $item->product->increment('stock', $item->quantity_sent);
+        }
 
-       DB::transaction(function () use ($item, $request, $order) {
-           $sent = $request->quantity_sent;
+        if ($sent > 0) {
+            $item->product->decrement('stock', $sent);
+        }
 
+        if ($sent == 0) {
+            $status = 'none';
+        } elseif ($sent >= $item->quantity) {
+            $status = 'complete';
+        } else {
+            $status = 'partial';
+        }
 
-           if ($item->quantity_sent > 0) {
-               $item->product->increment('stock', $item->quantity_sent);
-           }
+        $item->update([
+            'quantity_sent'            => $sent,
+            'dispatch_status'          => $status,
+            'unit_price'               => $item->unit_price,
+            'subtotal'                 => $item->unit_price * $sent,
+            'pallet_number'            => $request->pallet_number,
+            'pucho'                    => $request->pucho ?? 0,
+            'dispatch_expiration_date' => $request->dispatch_expiration_date,
+        ]);
 
+        // Recalcular totales de la orden basado en cantidad enviada
+        $order->load('items');
+        $subtotal = $order->items->sum(function($i) {
+            return $i->unit_price * $i->quantity_sent;
+        });
+        $tax   = $subtotal * 0.18;
+        $total = $subtotal + $tax;
 
-           if ($sent > 0) {
-               $item->product->decrement('stock', $sent);
-           }
+        $order->update([
+            'subtotal' => $subtotal,
+            'tax'      => $tax,
+            'total'    => $total,
+        ]);
 
+        if ($order->items->every(fn($i) => $i->dispatch_status !== 'pending')) {
+            $order->update(['status' => 'completed']);
+        } else {
+            $order->update(['status' => 'pending']);
+        }
+    });
 
-           if ($sent == 0) {
-               $status = 'none';
-           } elseif ($sent >= $item->quantity) {
-               $status = 'complete';
-           } else {
-               $status = 'partial';
-           }
-
-
-           $item->update([
-               'quantity_sent'            => $sent,
-               'dispatch_status'          => $status,
-               'pallet_number'            => $request->pallet_number,
-               'pucho'                    => $request->pucho ?? 0,
-               'dispatch_expiration_date' => $request->dispatch_expiration_date,
-           ]);
-
-
-           $order->load('items');
-           if ($order->items->every(fn($i) => $i->dispatch_status !== 'pending')) {
-               $order->update(['status' => 'completed']);
-           } else {
-               $order->update(['status' => 'pending']);
-           }
-       });
-
-
-       return response()->json(['success' => true]);
-   }
-
+    return response()->json(['success' => true]);
+}
 
    public function updateItem(Request $request, Order $order)
    {
