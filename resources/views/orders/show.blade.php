@@ -58,86 +58,85 @@
            </div>
 
 
-           @foreach($order->items as $item)
-           <div id="item-{{ $item->id }}"
-                style="background:{{ $item->status_bg }}; border-radius:0.5rem; padding:1rem; margin-bottom:0.75rem; border-left:4px solid {{ $item->status_color }};">
-               <div style="display:flex; justify-content:space-between; align-items:start;">
-                   <div style="flex:1;">
-                       <div style="font-weight:700;">{{ $item->product->name }}</div>
-                       <div style="font-size:0.85rem; color:#6b7280; margin-top:0.25rem;">
-                           Stock actual: <span style="font-weight:600; color:#374151;">{{ $item->product->stock }} {{ $item->product->unit }}</span>
-                       </div>
-                       <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0.5rem; margin-top:0.5rem; font-size:0.85rem;">
-                           <div>
-                               <span style="color:#6b7280;">Solicitado</span><br>
-                               <span style="font-weight:700;">{{ $item->quantity }}</span>
-                           </div>
-                           <div>
-                               <span style="color:#6b7280;">Enviado</span><br>
-                               <span style="font-weight:700; color:{{ $item->status_color }};">{{ $item->quantity_sent }}</span>
-                           </div>
-                           <div>
-                               <span style="color:#6b7280;">Precio unit.</span><br>
-                               <span style="font-weight:700; color:#0ea5e9;">S/ {{ number_format($item->unit_price, 2) }}</span>
-                           </div>
-                           <div>
-                               <span style="color:#6b7280;">Estado</span><br>
-                               <span style="font-weight:700; color:{{ $item->status_color }};">
-                                   @if($item->dispatch_status === 'complete') ✅ Completo
-                                   @elseif($item->dispatch_status === 'partial') 🟡 Parcial
-                                   @elseif($item->dispatch_status === 'none') ❌ No enviado
-                                   @else ⏳ Pendiente
-                                   @endif
-                               </span>
-                           </div>
-                       </div>
+          @foreach($order->items as $item)
+<div id="item-{{ $item->id }}"
+     style="background:{{ $item->status_bg }}; border-radius:0.5rem; padding:1rem; margin-bottom:0.75rem; border-left:4px solid {{ $item->status_color }};">
 
+    @if($item->dispatch_status === 'none')
+    <div style="background:#ef4444; color:white; padding:0.4rem 0.75rem; border-radius:0.375rem; font-size:0.8rem; font-weight:700; margin-bottom:0.5rem; display:inline-block;">
+        ❌ PRODUCTO NO ENVIADO — No se cobrará
+    </div>
+    @endif
 
-                       @if($order->order_type === 'supermercado' && $item->dispatch_status !== 'pending')
-                       <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; margin-top:0.75rem; padding-top:0.75rem; border-top:1px solid #e5e7eb; font-size:0.85rem;">
-                           <div>
-                               <span style="color:#6b7280;">Paleta</span><br>
-                               <span style="font-weight:700;">{{ $item->pallet_number ?? '—' }}</span>
-                           </div>
-                           <div>
-                               <span style="color:#6b7280;">Pucho</span><br>
-                               <span style="font-weight:700;">{{ $item->pucho ?? 0 }} cajas</span>
-                           </div>
-                           <div>
-                               <span style="color:#6b7280;">Vencimiento</span><br>
-                               <span style="font-weight:700; color:#0369a1;">
-                                   {{ $item->dispatch_expiration_date ? $item->dispatch_expiration_date->format('d/m/Y') : '—' }}
-                               </span>
-                           </div>
-                       </div>
-                       @endif
-                   </div>
+    <div style="display:flex; justify-content:space-between; align-items:start;">
+        <div style="flex:1;">
+            <div style="font-weight:700; {{ $item->dispatch_status === 'none' ? 'text-decoration:line-through; color:#9ca3af;' : '' }}">
+                {{ $item->product->name }}
+            </div>
+            <div style="font-size:0.85rem; color:#6b7280; margin-top:0.25rem;">
+                Stock actual: <span style="font-weight:600; color:#374151;">{{ $item->product->stock }} {{ $item->product->unit }}</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; margin-top:0.5rem; font-size:0.85rem;">
+                <div>
+                    <span style="color:#6b7280;">Solicitado</span><br>
+                    <span style="font-weight:700;">{{ $item->quantity }}</span>
+                </div>
+                <div>
+                    <span style="color:#6b7280;">Enviado</span><br>
+                    <span style="font-weight:700; color:{{ $item->status_color }};">{{ $item->quantity_sent }}</span>
+                </div>
+                <div>
+                    <span style="color:#6b7280;">Estado</span><br>
+                    <span style="font-weight:700; color:{{ $item->status_color }};">
+                        @if($item->dispatch_status === 'complete') ✅ Completo
+                        @elseif($item->dispatch_status === 'partial') 🟡 Parcial
+                        @elseif($item->dispatch_status === 'none') ❌ No enviado
+                        @else ⏳ Pendiente
+                        @endif
+                    </span>
+                </div>
+            </div>
 
+            @if($order->order_type === 'supermercado' && $item->dispatch_status !== 'pending')
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; margin-top:0.75rem; padding-top:0.75rem; border-top:1px solid #e5e7eb; font-size:0.85rem;">
+                <div>
+                    <span style="color:#6b7280;">Paleta</span><br>
+                    <span style="font-weight:700;">{{ $item->pallet_number ?? '—' }}</span>
+                </div>
+                <div>
+                    <span style="color:#6b7280;">Pucho</span><br>
+                    <span style="font-weight:700;">{{ $item->pucho ?? 0 }} cajas</span>
+                </div>
+                <div>
+                    <span style="color:#6b7280;">Vencimiento</span><br>
+                    <span style="font-weight:700; color:#0369a1;">
+                        {{ $item->dispatch_expiration_date ? $item->dispatch_expiration_date->format('d/m/Y') : '—' }}
+                    </span>
+                </div>
+            </div>
+            @endif
+        </div>
 
-                   <div style="display:flex; flex-direction:column; gap:0.5rem; margin-left:1rem; min-width:120px;">
-                       @if($item->dispatch_status === 'pending')
-                       <button onclick="openDispatch({{ $item->id }},'{{ addslashes($item->product->name) }}',{{ $item->quantity }},{{ $item->product->stock }},'{{ $item->product->barcode }}','',0,'{{ $item->product->expiration_date ? $item->product->expiration_date->format('Y-m-d') : '' }}')"
-                               style="background:#2563eb; color:white; padding:0.5rem 0.75rem; border-radius:0.5rem; font-size:0.8rem; white-space:nowrap; border:none; cursor:pointer; width:100%;">
-                           📤 Despachar
-                       </button>
-                       @else
-                       <button onclick="openDispatch({{ $item->id }},'{{ addslashes($item->product->name) }}',{{ $item->quantity }},{{ $item->product->stock }},'{{ $item->product->barcode }}','{{ $item->pallet_number }}',{{ $item->pucho ?? 0 }},'{{ $item->dispatch_expiration_date ? $item->dispatch_expiration_date->format('Y-m-d') : ($item->product->expiration_date ? $item->product->expiration_date->format('Y-m-d') : '') }}')"
-                               style="background:#ea580c; color:white; padding:0.5rem 0.75rem; border-radius:0.5rem; font-size:0.8rem; white-space:nowrap; border:none; cursor:pointer; width:100%;">
-                           ✏️ Editar envío
-                       </button>
-                       @endif
-                       <button onclick="openEditRequested({{ $item->id }}, {{ $item->quantity }})"
-                               style="background:#6b7280; color:white; padding:0.5rem 0.75rem; border-radius:0.5rem; font-size:0.8rem; white-space:nowrap; border:none; cursor:pointer; width:100%;">
-                           📝 Editar pedido
-                       </button>
-                       <button onclick="openEditPrice({{ $item->id }}, {{ $item->unit_price }})"
-                               style="background:#0ea5e9; color:white; padding:0.5rem 0.75rem; border-radius:0.5rem; font-size:0.8rem; white-space:nowrap; border:none; cursor:pointer; width:100%;">
-                           💲 Editar precio
-                       </button>
-                   </div>
-               </div>
-           </div>
-           @endforeach
+        <div style="display:flex; flex-direction:column; gap:0.5rem; margin-left:1rem; min-width:120px;">
+            @if($item->dispatch_status === 'pending')
+            <button onclick="openDispatch({{ $item->id }},'{{ addslashes($item->product->name) }}',{{ $item->quantity }},{{ $item->product->stock }},'{{ $item->product->barcode }}','',0,'{{ $item->product->expiration_date ? $item->product->expiration_date->format('Y-m-d') : '' }}')"
+                    style="background:#2563eb; color:white; padding:0.5rem 0.75rem; border-radius:0.5rem; font-size:0.8rem; white-space:nowrap; border:none; cursor:pointer; width:100%;">
+                📤 Despachar
+            </button>
+            @else
+            <button onclick="openDispatch({{ $item->id }},'{{ addslashes($item->product->name) }}',{{ $item->quantity }},{{ $item->product->stock }},'{{ $item->product->barcode }}','{{ $item->pallet_number }}',{{ $item->pucho ?? 0 }},'{{ $item->dispatch_expiration_date ? $item->dispatch_expiration_date->format('Y-m-d') : ($item->product->expiration_date ? $item->product->expiration_date->format('Y-m-d') : '') }}')"
+                    style="background:#ea580c; color:white; padding:0.5rem 0.75rem; border-radius:0.5rem; font-size:0.8rem; white-space:nowrap; border:none; cursor:pointer; width:100%;">
+                ✏️ Editar envío
+            </button>
+            @endif
+            <button onclick="openEditRequested({{ $item->id }}, {{ $item->quantity }})"
+                    style="background:#6b7280; color:white; padding:0.5rem 0.75rem; border-radius:0.5rem; font-size:0.8rem; white-space:nowrap; border:none; cursor:pointer; width:100%;">
+                📝 Editar pedido
+            </button>
+        </div>
+    </div>
+</div>
+@endforeach
 
 
            <div style="text-align:right; margin-top:1rem; font-size:0.9rem;">
