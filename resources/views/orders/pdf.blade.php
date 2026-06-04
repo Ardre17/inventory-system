@@ -143,11 +143,11 @@
                     <td style="text-align:left; font-weight:600;">{{ $item->product->name }}</td>
                     <td>{{ number_format($item->quantity) }}</td>
                     <td class="{{ $statusClass }}">{{ number_format($item->quantity_sent) }}</td>
-                    <td>{{ number_format($item->unit_price, 3) }}</td>
-                    <td>{{ number_format($precioImp, 3) }}</td>
-                    <td>{{ number_format($totalNeto, 3) }}</td>
-                    <td>{{ number_format($totalImp, 3) }}</td>
-                </tr>
+                    <td>{{ $noEnviado ? '—' : number_format($item->unit_price, 3) }}</td>
+                    <td>{{ $noEnviado ? '—' : number_format($precioImp, 3) }}</td>
+                    <td>{{ $noEnviado ? '—' : number_format($totalNeto, 3) }}</td>
+                    <td>{{ $noEnviado ? '—' : number_format($totalImp, 3) }}</td>
+                                    </tr>
                 @endforeach
             </tbody>
         </table>
