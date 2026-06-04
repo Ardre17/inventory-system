@@ -124,32 +124,64 @@
                     <th>Total c/Imp.</th>
                 </tr>
             </thead>
-            <tbody>
-                @foreach($order->items as $item)
-              @php
-                    $precioImp = $item->unit_price * 1.18;
-                    $totalNeto = $item->unit_price * $item->quantity_sent;
-                    $totalImp  = $precioImp * $item->quantity_sent;
-                    $noEnviado = $item->dispatch_status === 'none';
-                @endphp
-                                <tr>
-                    @if($order->order_type === 'supermercado')
-                    <td style="font-weight:700; color:#1e3a8a;">{{ $item->pallet_number ?? '—' }}</td>
-                    <td>{{ $item->pucho ?? 0 }}</td>
-                    <td style="color:#0369a1;">
-                        {{ $item->dispatch_expiration_date ? $item->dispatch_expiration_date->format('d/m/Y') : '—' }}
-                    </td>
-                    @endif
-                    <td style="text-align:left; font-weight:600;">{{ $item->product->name }}</td>
-                    <td>{{ number_format($item->quantity) }}</td>
-                    <td class="{{ $statusClass }}">{{ number_format($item->quantity_sent) }}</td>
-                    <td>{{ $noEnviado ? '—' : number_format($item->unit_price, 3) }}</td>
-                    <td>{{ $noEnviado ? '—' : number_format($precioImp, 3) }}</td>
-                    <td>{{ $noEnviado ? '—' : number_format($totalNeto, 3) }}</td>
-                    <td>{{ $noEnviado ? '—' : number_format($totalImp, 3) }}</td>
-                                    </tr>
-                @endforeach
-            </tbody>
+           <tbody>
+    @foreach($order->items as $item)
+    @php
+        $precioImp = $item->unit_price * 1.18;
+        $totalNeto = $item->unit_price * $item->quantity_sent;
+        $totalImp  = $precioImp * $item->quantity_sent;
+        $noEnviado = $item->dispatch_status === 'none';
+
+        $statusClass = match($item->dispatch_status) {
+            'complete' => 'status-complete',
+            'partial'  => 'status-partial',
+            'none'     => 'status-none',
+            default    => '',
+        };
+    @endphp
+
+    <tr>
+        @if($order->order_type === 'supermercado')
+        <td style="font-weight:700; color:#1e3a8a;">
+            {{ $item->pallet_number ?? '—' }}
+        </td>
+        <td>
+            {{ $item->pucho ?? 0 }}
+        </td>
+        <td style="color:#0369a1;">
+            {{ $item->dispatch_expiration_date ? $item->dispatch_expiration_date->format('d/m/Y') : '—' }}
+        </td>
+        @endif
+
+        <td style="text-align:left; font-weight:600;">
+            {{ $item->product?->name ?? $item->rawMaterial?->name ?? 'Producto no encontrado' }}
+        </td>
+
+        <td>{{ number_format($item->quantity) }}</td>
+
+        <td class="{{ $statusClass }}">
+            {{ number_format($item->quantity_sent) }}
+        </td>
+
+        <td>
+            {{ $noEnviado ? '—' : number_format($item->unit_price, 3) }}
+        </td>
+
+        <td>
+            {{ $noEnviado ? '—' : number_format($precioImp, 3) }}
+        </td>
+
+        <td>
+            {{ $noEnviado ? '—' : number_format($totalNeto, 3) }}
+        </td>
+
+        <td>
+            {{ $noEnviado ? '—' : number_format($totalImp, 3) }}
+        </td>
+    </tr>
+
+    @endforeach
+</tbody>
         </table>
     </div>
 
