@@ -19,31 +19,31 @@
 
                 <form method="POST" action="{{ route('clients.store') }}">
                     @csrf
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-semibold mb-2">Nombre *</label>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Nombre *</label>
                         <input type="text" name="name" value="{{ old('name') }}"
-                               class="w-full border rounded-lg px-3 py-2"
+                               style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;"
                                placeholder="Nombre completo">
                     </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-semibold mb-2">Teléfono</label>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Teléfono</label>
                         <input type="text" name="phone" value="{{ old('phone') }}"
-                               class="w-full border rounded-lg px-3 py-2"
+                               style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;"
                                placeholder="Teléfono">
                     </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-semibold mb-2">Email</label>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Email</label>
                         <input type="email" name="email" value="{{ old('email') }}"
-                               class="w-full border rounded-lg px-3 py-2"
+                               style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;"
                                placeholder="Email">
                     </div>
-                    <div class="mb-6">
-                        <label class="block text-gray-700 font-semibold mb-2">Dirección</label>
+                    <div style="margin-bottom:1.5rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Dirección</label>
                         <input type="text" name="address" value="{{ old('address') }}"
-                               class="w-full border rounded-lg px-3 py-2"
+                               style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;"
                                placeholder="Dirección">
                     </div>
-                    <div class="flex gap-3">
+                    <div style="display:flex; gap:1rem;">
                         <button type="submit"
                                 style="background-color:#0891b2; color:white; padding:0.5rem 1.5rem; border-radius:0.5rem; font-weight:600;">
                             Guardar

@@ -20,17 +20,17 @@
                 <form method="POST" action="{{ route('categories.update', $category) }}">
                     @csrf
                     @method('PUT')
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-semibold mb-2">Nombre *</label>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Nombre *</label>
                         <input type="text" name="name" value="{{ old('name', $category->name) }}"
                                class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
                     </div>
-                    <div class="mb-6">
-                        <label class="block text-gray-700 font-semibold mb-2">Descripción</label>
+                    <div style="margin-bottom:1.5rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Descripción</label>
                         <textarea name="description" rows="3"
                                   class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">{{ old('description', $category->description) }}</textarea>
                     </div>
-                    <div class="flex gap-3">
+                    <div style="display:flex; gap:1rem;">
                         <button type="submit"
                                 class="bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600">
                             Actualizar

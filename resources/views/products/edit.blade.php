@@ -25,22 +25,22 @@
                         📋 Información General
                     </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-semibold mb-2">Nombre *</label>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Nombre *</label>
                         <input type="text" name="name" value="{{ old('name', $product->name) }}"
-                               class="w-full border rounded-lg px-3 py-2">
+                               style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                     </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-semibold mb-2">Descripción</label>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Descripción</label>
                         <textarea name="description" rows="2"
-                                  class="w-full border rounded-lg px-3 py-2">{{ old('description', $product->description) }}</textarea>
+                                  style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">{{ old('description', $product->description) }}</textarea>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Categoría *</label>
-                            <select name="category_id" class="w-full border rounded-lg px-3 py-2">
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Categoría *</label>
+                            <select name="category_id" style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                                 <option value="">Selecciona...</option>
                                 @foreach($categories as $category)
                                 <option value="{{ $category->id }}" {{ $product->category_id == $category->id ? 'selected' : '' }}>
@@ -50,8 +50,8 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Proveedor</label>
-                            <select name="supplier_id" class="w-full border rounded-lg px-3 py-2">
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Proveedor</label>
+                            <select name="supplier_id" style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                                 <option value="">Sin proveedor</option>
                                 @foreach($suppliers as $supplier)
                                 <option value="{{ $supplier->id }}" {{ $product->supplier_id == $supplier->id ? 'selected' : '' }}>
@@ -62,16 +62,16 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">SKU</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">SKU</label>
                             <input type="text" name="sku" value="{{ old('sku', $product->sku) }}"
-                                   class="w-full border rounded-lg px-3 py-2">
+                                   style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                         </div>
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Código de barras</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Código de barras</label>
                             <input type="text" name="barcode" value="{{ old('barcode', $product->barcode) }}"
-                                   class="w-full border rounded-lg px-3 py-2">
+                                   style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                         </div>
                     </div>
 
@@ -79,52 +79,52 @@
                         📦 Stock y Precios
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Precio *</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Precio *</label>
                             <input type="number" name="price" value="{{ old('price', $product->price) }}"
-                                   step="0.01" class="w-full border rounded-lg px-3 py-2">
+                                   step="0.01" style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                         </div>
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Costo</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Costo</label>
                             <input type="number" name="cost" value="{{ old('cost', $product->cost) }}"
-                                   step="0.01" class="w-full border rounded-lg px-3 py-2">
+                                   step="0.01" style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Stock actual *</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Stock actual *</label>
                             <input type="number" name="stock" value="{{ old('stock', $product->stock) }}"
-                                   class="w-full border rounded-lg px-3 py-2">
+                                   style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                         </div>
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Stock mínimo *</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Stock mínimo *</label>
                             <input type="number" name="stock_min" value="{{ old('stock_min', $product->stock_min) }}"
-                                   class="w-full border rounded-lg px-3 py-2">
+                                   style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
     <div>
-        <label class="block text-gray-700 font-semibold mb-2">Unidades por caja</label>
+        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Unidades por caja</label>
         <input type="number" name="units_per_box" id="units_per_box"
                value="{{ old('units_per_box', $product->units_per_box) }}" min="1"
-               class="w-full border rounded-lg px-3 py-2">
+               style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
     </div>
     <div>
-        <label class="block text-gray-700 font-semibold mb-2">Cajas en stock</label>
+        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Cajas en stock</label>
         <input type="number" name="boxes" id="boxes"
                value="{{ old('boxes', $product->boxes) }}" step="0.01"
-               class="w-full border rounded-lg px-3 py-2"
+               style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;"
                readonly
                style="background:#f3f4f6; color:#6b7280;">
     </div>
 </div>
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Unidad</label>
-                            <select name="unit" class="w-full border rounded-lg px-3 py-2">
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Unidad</label>
+                            <select name="unit" style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                                 <option value="unidad" {{ $product->unit == 'unidad' ? 'selected' : '' }}>Unidad</option>
                                 <option value="kg" {{ $product->unit == 'kg' ? 'selected' : '' }}>Kilogramo</option>
                                 <option value="litro" {{ $product->unit == 'litro' ? 'selected' : '' }}>Litro</option>
@@ -138,55 +138,55 @@
                         📅 Fechas y Control
                     </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-semibold mb-2">Rotación</label>
-                        <select name="rotation" class="w-full border rounded-lg px-3 py-2">
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Rotación</label>
+                        <select name="rotation" style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                             <option value="alta" {{ $product->rotation == 'alta' ? 'selected' : '' }}>🟢 Alta</option>
                             <option value="media" {{ $product->rotation == 'media' ? 'selected' : '' }}>🟠 Media</option>
                             <option value="baja" {{ $product->rotation == 'baja' ? 'selected' : '' }}>🔴 Baja</option>
                         </select>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-semibold mb-2">Lote</label>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Lote</label>
                         <input type="text" name="lot" value="{{ old('lot', $product->lot) }}"
-                               class="w-full border rounded-lg px-3 py-2">
+                               style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Fecha Producción</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Fecha Producción</label>
                             <input type="date" name="production_date"
                                    value="{{ old('production_date', $product->production_date?->format('Y-m-d')) }}"
-                                   class="w-full border rounded-lg px-3 py-2">
+                                   style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                         </div>
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Fecha Vencimiento</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Fecha Vencimiento</label>
                             <input type="date" name="expiration_date"
                                    value="{{ old('expiration_date', $product->expiration_date?->format('Y-m-d')) }}"
-                                   class="w-full border rounded-lg px-3 py-2">
+                                   style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                         </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-semibold mb-2">Fecha Inventario</label>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Fecha Inventario</label>
                         <input type="date" name="inventory_date"
                                value="{{ old('inventory_date', $product->inventory_date?->format('Y-m-d')) }}"
-                               class="w-full border rounded-lg px-3 py-2">
+                               style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                     </div>
 
-                    <div class="mb-6">
-                        <label class="block text-gray-700 font-semibold mb-2">URL de imagen</label>
+                    <div style="margin-bottom:1.5rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">URL de imagen</label>
                         @if($product->image_url)
                         <img src="{{ $product->image_url }}" alt="imagen actual"
                              style="width:80px; height:80px; object-fit:cover; border-radius:0.5rem; margin-bottom:0.5rem;">
                         @endif
                         <input type="text" name="image_url" value="{{ old('image_url', $product->image_url) }}"
-                               class="w-full border rounded-lg px-3 py-2"
+                               style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;"
                                placeholder="https://...">
                     </div>
 
-                    <div class="flex gap-3">
+                    <div style="display:flex; gap:1rem;">
                         <button type="submit"
                                 style="background-color:#16a34a; color:white; padding:0.5rem 1.5rem; border-radius:0.5rem; font-weight:600;">
                             Actualizar

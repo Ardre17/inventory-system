@@ -17,42 +17,42 @@
 
                 <form method="POST" action="{{ route('raw-materials.store') }}">
                     @csrf
-                    <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Nombre *</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Nombre *</label>
                             <input type="text" name="name" value="{{ old('name') }}"
-                                   class="w-full border rounded-lg px-3 py-2" required>
+                                   style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;" required>
                         </div>
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Unidad *</label>
-                            <select name="unit" class="w-full border rounded-lg px-3 py-2" required>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Unidad *</label>
+                            <select name="unit" style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;" required>
                                 @foreach(['kg','g','L','ml','unid','caja','bolsa','saco'] as $u)
                                 <option value="{{ $u }}" {{ old('unit') == $u ? 'selected' : '' }}>{{ $u }}</option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
-                    <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-bottom:1rem;">
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Stock actual *</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Stock actual *</label>
                             <input type="number" name="stock" value="{{ old('stock', 0) }}"
-                                   step="0.001" min="0" class="w-full border rounded-lg px-3 py-2" required>
+                                   step="0.001" min="0" style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;" required>
                         </div>
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Stock mínimo *</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Stock mínimo *</label>
                             <input type="number" name="stock_min" value="{{ old('stock_min', 0) }}"
-                                   step="0.001" min="0" class="w-full border rounded-lg px-3 py-2" required>
+                                   step="0.001" min="0" style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;" required>
                         </div>
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Costo *</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Costo *</label>
                             <input type="number" name="cost" value="{{ old('cost', 0) }}"
-                                   step="0.01" min="0" class="w-full border rounded-lg px-3 py-2" required>
+                                   step="0.01" min="0" style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;" required>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Proveedor</label>
-                            <select name="supplier_id" class="w-full border rounded-lg px-3 py-2">
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Proveedor</label>
+                            <select name="supplier_id" style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                                 <option value="">— Sin proveedor —</option>
                                 @foreach($suppliers as $s)
                                 <option value="{{ $s->id }}" {{ old('supplier_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
@@ -60,29 +60,29 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Lote</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Lote</label>
                             <input type="text" name="lot" value="{{ old('lot') }}"
-                                   class="w-full border rounded-lg px-3 py-2">
+                                   style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Fecha vencimiento</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Fecha vencimiento</label>
                             <input type="date" name="expiration_date" value="{{ old('expiration_date') }}"
-                                   class="w-full border rounded-lg px-3 py-2">
+                                   style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                         </div>
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">URL imagen</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">URL imagen</label>
                             <input type="text" name="image_url" value="{{ old('image_url') }}"
-                                   class="w-full border rounded-lg px-3 py-2" placeholder="https://...">
+                                   style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;" placeholder="https://...">
                         </div>
                     </div>
-                    <div class="mb-6">
-                        <label class="block text-gray-700 font-semibold mb-2">Descripción</label>
+                    <div style="margin-bottom:1.5rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Descripción</label>
                         <textarea name="description" rows="3"
-                                  class="w-full border rounded-lg px-3 py-2">{{ old('description') }}</textarea>
+                                  style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">{{ old('description') }}</textarea>
                     </div>
-                    <div class="flex gap-3">
+                    <div style="display:flex; gap:1rem;">
                         <button type="submit"
                                 style="background-color:#2563eb; color:white; padding:0.5rem 1.5rem; border-radius:0.5rem; font-weight:600;">
                             Guardar

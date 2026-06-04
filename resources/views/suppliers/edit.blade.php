@@ -12,27 +12,27 @@
                 <form method="POST" action="{{ route('suppliers.update', $supplier) }}">
                     @csrf
                     @method('PUT')
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-semibold mb-2">Nombre *</label>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Nombre *</label>
                         <input type="text" name="name" value="{{ old('name', $supplier->name) }}"
-                               class="w-full border rounded-lg px-3 py-2">
+                               style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                     </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-semibold mb-2">Contacto</label>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Contacto</label>
                         <input type="text" name="contact" value="{{ old('contact', $supplier->contact) }}"
-                               class="w-full border rounded-lg px-3 py-2">
+                               style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                     </div>
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-semibold mb-2">Teléfono</label>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Teléfono</label>
                         <input type="text" name="phone" value="{{ old('phone', $supplier->phone) }}"
-                               class="w-full border rounded-lg px-3 py-2">
+                               style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                     </div>
-                    <div class="mb-6">
-                        <label class="block text-gray-700 font-semibold mb-2">Email</label>
+                    <div style="margin-bottom:1.5rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Email</label>
                         <input type="email" name="email" value="{{ old('email', $supplier->email) }}"
-                               class="w-full border rounded-lg px-3 py-2">
+                               style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                     </div>
-                    <div class="flex gap-3">
+                    <div style="display:flex; gap:1rem;">
                         <button type="submit"
                                 style="background-color:#2563eb; color:white; padding:0.5rem 1.5rem; border-radius:0.5rem; font-weight:600;">
                             Actualizar

@@ -19,31 +19,31 @@
 
                 <form method="POST" action="{{ route('inventory-periods.store') }}">
                     @csrf
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-semibold mb-2">Nombre del periodo *</label>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Nombre del periodo *</label>
                         <input type="text" name="name" value="{{ old('name') }}"
-                               class="w-full border rounded-lg px-3 py-2"
+                               style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;"
                                placeholder="Ej: Inventario Quincena 1 - Mayo 2026">
                     </div>
-                    <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Fecha inicio *</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Fecha inicio *</label>
                             <input type="date" name="start_date" value="{{ old('start_date') }}"
-                                   class="w-full border rounded-lg px-3 py-2">
+                                   style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                         </div>
                         <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Fecha fin *</label>
+                            <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Fecha fin *</label>
                             <input type="date" name="end_date" value="{{ old('end_date') }}"
-                                   class="w-full border rounded-lg px-3 py-2">
+                                   style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
                         </div>
                     </div>
-                    <div class="mb-6">
-                        <label class="block text-gray-700 font-semibold mb-2">Notas</label>
+                    <div style="margin-bottom:1.5rem;">
+                        <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Notas</label>
                         <textarea name="notes" rows="2"
-                                  class="w-full border rounded-lg px-3 py-2"
+                                  style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;"
                                   placeholder="Notas opcionales"></textarea>
                     </div>
-                    <div class="flex gap-3">
+                    <div style="display:flex; gap:1rem;">
                         <button type="submit"
                                 style="background-color:#ea580c; color:white; padding:0.5rem 1.5rem; border-radius:0.5rem; font-weight:600;">
                             Crear Inventario
