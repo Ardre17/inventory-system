@@ -229,7 +229,12 @@
             <span class="nav-icon">🏭</span>
             <span class="nav-label">Órdenes de Producción</span>
         </a>
-        
+        <a href="{{ route('projections.index') }}"
+            class="nav-item {{ request()->routeIs('projections.*') ? 'active' : '' }}"
+            data-tooltip="Proyecciones">
+                <span class="nav-icon">📈</span>
+                <span class="nav-label">Proyecciones</span>
+            </a>
         
         <a href="{{ route('product-raw-materials.index') }}"
         class="nav-item {{ request()->routeIs('product-raw-materials.*') ? 'active' : '' }}"

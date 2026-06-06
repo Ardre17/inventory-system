@@ -9,6 +9,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\InventoryPeriodController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProductionOrderController;
+use App\Http\Controllers\ProjectionController;
 use App\Http\Controllers\ProductRawMaterialController;
 use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\SupplyController;
@@ -39,7 +40,8 @@ Route::middleware(['auth'])->group(function () {
    })->name('dashboard');
 
 
-   Route::resource('categories', CategoryController::class);
+   Route::get('projections', [ProjectionController::class, 'index'])->name('projections.index');
+    Route::resource('categories', CategoryController::class);
    Route::resource('suppliers', SupplierController::class);
    Route::resource('clients', ClientController::class);
    Route::get('/api/clients/search', [ClientController::class, 'search'])->name('clients.search');

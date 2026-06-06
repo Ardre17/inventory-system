@@ -27,21 +27,42 @@
         tbody tr.no-enviado { background: #fee2e2; }
         tbody td { padding: 6px; text-align: center; font-size: 10px; }
         tbody td:nth-child(4) { text-align: left; font-weight: 600; }
-        .status-complete { color: #059669; font-weight: 700; }
-        .status-partial { color: #d97706; font-weight: 700; }
-        .status-none { color: #dc2626; font-weight: 700; text-decoration: line-through; }
+            .status-complete {
+        color: #059669;
+        font-weight: 700;
+    }
+
+    .status-partial {
+        color: #d97706;
+        font-weight: 700;
+    }
+
+    .status-none {
+        color: #dc2626;
+        font-weight: 700;
+    }
         .totals { padding: 0 20px; display: flex; justify-content: flex-end; margin-bottom: 16px; }
         .totals-box { width: 260px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; }
         .totals-row { display: flex; justify-content: space-between; padding: 5px 12px; font-size: 11px; }
         .totals-row.highlight { background: #1e3a8a; color: white; font-weight: 700; font-size: 13px; }
         .totals-row.sub { background: #f8fafc; }
-        .watermark { position: fixed; bottom: 20px; left: 0; right: 0; text-align: center; opacity: 0.12; font-size: 48px; font-weight: 900; color: #1e3a8a; letter-spacing: 8px; text-transform: uppercase; }
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; border-top: 1px solid #e2e8f0; padding: 6px 20px; display: flex; justify-content: space-between; font-size: 9px; color: #9ca3af; background: white; }
+
+        .watermark {
+    position: fixed;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    opacity: 0.06;
+    font-size: 90px;
+    font-weight: 900;
+    color: #1e3a8a;
+    letter-spacing: 10px;
+    z-index: -1;
+}
     </style>
 </head>
 <body>
-
-    <div class="watermark">DISTAN</div>
+<div class="watermark">DISTAN</div>
 
     <div class="header">
         <div class="header-grid">
@@ -98,99 +119,82 @@
                     <th>Total c/Imp.</th>
                 </tr>
             </thead>
-<<<<<<< HEAD
            <tbody>
-    @foreach($order->items as $item)
-    @php
-        $precioImp = $item->unit_price * 1.18;
-        $totalNeto = $item->unit_price * $item->quantity_sent;
-        $totalImp  = $precioImp * $item->quantity_sent;
-        $noEnviado = $item->dispatch_status === 'none';
+@foreach($order->items as $item)
+@php
+    $precioImp = $item->unit_price * 1.18;
+    $totalNeto = $item->unit_price * $item->quantity_sent;
+    $totalImp  = $precioImp * $item->quantity_sent;
+    $noEnviado = $item->dispatch_status === 'none';
 
-        $statusClass = match($item->dispatch_status) {
-            'complete' => 'status-complete',
-            'partial'  => 'status-partial',
-            'none'     => 'status-none',
-            default    => '',
-        };
-    @endphp
+    $statusClass = match($item->dispatch_status) {
+        'complete' => 'status-complete',
+        'partial'  => 'status-partial',
+        'none'     => 'status-none',
+        default    => '',
+    };
+@endphp
 
-    <tr>
-        @if($order->order_type === 'supermercado')
-        <td style="font-weight:700; color:#1e3a8a;">
-            {{ $item->pallet_number ?? '—' }}
-        </td>
-        <td>
-            {{ $item->pucho ?? 0 }}
-        </td>
-        <td style="color:#0369a1;">
-            {{ $item->dispatch_expiration_date ? $item->dispatch_expiration_date->format('d/m/Y') : '—' }}
-        </td>
-        @endif
+<tr style="{{ $noEnviado ? 'background:#fee2e2;' : '' }}">
 
-        <td style="text-align:left; font-weight:600;">
+    @if($order->order_type === 'supermercado')
+    <td style="font-weight:700; color:#1e3a8a;">
+        {{ $item->pallet_number ?? '—' }}
+    </td>
+
+    <td>
+        {{ $item->pucho ?? 0 }}
+    </td>
+
+    <td style="color:#0369a1;">
+        {{ $item->dispatch_expiration_date ? $item->dispatch_expiration_date->format('d/m/Y') : '—' }}
+    </td>
+    @endif
+
+    <td style="text-align:left; font-weight:600;">
+        <span style="{{ $noEnviado ? 'text-decoration:line-through;color:#dc2626;' : '' }}">
             {{ $item->product?->name ?? $item->rawMaterial?->name ?? 'Producto no encontrado' }}
-        </td>
+        </span>
 
-        <td>{{ number_format($item->quantity) }}</td>
+        @if($noEnviado)
+        <div style="
+            color:#dc2626;
+            font-size:9px;
+            font-weight:700;
+            margin-top:2px;
+        ">
+            ✖ NO ENVIADO
+        </div>
+        @endif
+    </td>
 
-        <td class="{{ $statusClass }}">
-            {{ number_format($item->quantity_sent) }}
-        </td>
+    <td>
+        {{ number_format($item->quantity) }}
+    </td>
 
-        <td>
-            {{ $noEnviado ? '—' : number_format($item->unit_price, 3) }}
-        </td>
+    <td class="{{ $statusClass }}">
+        {{ number_format($item->quantity_sent) }}
+    </td>
 
-        <td>
-            {{ $noEnviado ? '—' : number_format($precioImp, 3) }}
-        </td>
+    <td>
+        {{ $noEnviado ? '—' : number_format($item->unit_price, 3) }}
+    </td>
 
-        <td>
-            {{ $noEnviado ? '—' : number_format($totalNeto, 3) }}
-        </td>
+    <td>
+        {{ $noEnviado ? '—' : number_format($precioImp, 3) }}
+    </td>
 
-        <td>
-            {{ $noEnviado ? '—' : number_format($totalImp, 3) }}
-        </td>
-    </tr>
+    <td>
+        {{ $noEnviado ? '—' : number_format($totalNeto, 3) }}
+    </td>
 
-    @endforeach
+    <td>
+        {{ $noEnviado ? '—' : number_format($totalImp, 3) }}
+    </td>
+
+</tr>
+@endforeach
 </tbody>
-=======
-            <tbody>
-                @foreach($order->items as $item)
-                @php
-                    $noEnviado  = $item->dispatch_status === 'none';
-                    $precioImp  = $item->unit_price * 1.18;
-                    $totalNeto  = $item->unit_price * $item->quantity_sent;
-                    $totalImp   = $precioImp * $item->quantity_sent;
-                    $statusCss  = $noEnviado ? 'status-none' : ($item->quantity_sent < $item->quantity ? 'status-partial' : 'status-complete');
-                @endphp
-                <tr class="{{ $noEnviado ? 'no-enviado' : '' }}">
-                    @if($order->order_type === 'supermercado')
-                    <td style="font-weight:700; color:#1e3a8a;">{{ $item->pallet_number ?? '—' }}</td>
-                    <td>{{ $item->pucho ?? 0 }}</td>
-                    <td style="color:#0369a1;">
-                        {{ $item->dispatch_expiration_date ? $item->dispatch_expiration_date->format('d/m/Y') : '—' }}
-                    </td>
-                    @endif
-                    <td style="text-align:left; font-weight:600; {{ $noEnviado ? 'text-decoration:line-through; color:#9ca3af;' : '' }}">
-                        {{ $item->product->name }}
-                        @if($noEnviado)
-                        <span style="color:#dc2626; font-size:9px; display:block; font-weight:700;">NO ENVIADO</span>
-                        @endif
-                    </td>
-                    <td>{{ number_format($item->quantity) }}</td>
-                    <td class="{{ $statusCss }}">{{ number_format($item->quantity_sent) }}</td>
-                    <td>{{ $noEnviado ? '—' : number_format($item->unit_price, 3) }}</td>
-                    <td>{{ $noEnviado ? '—' : number_format($precioImp, 3) }}</td>
-                    <td>{{ $noEnviado ? '—' : number_format($totalNeto, 3) }}</td>
-                    <td>{{ $noEnviado ? '—' : number_format($totalImp, 3) }}</td>
-                </tr>
-                @endforeach
-            </tbody>
->>>>>>> 0664d77 (Fix PDF con productos no enviados y totales correctos)
         </table>
     </div>
 
@@ -220,15 +224,245 @@
     </div>
 
     <div style="padding:0 20px; font-size:10px; color:#6b7280; margin-bottom:40px;">
-        Total productos: <strong>{{ $order->items->sum('quantity') }}</strong> unidades |
+        
+    {{-- Distribución de Paletas --}}
+
+@php
+
+$pallets = [];
+
+foreach ($order->items as $item) {
+
+    if (!$item->pallet_number) {
+        continue;
+    }
+
+    $detallePaletas = explode(',', $item->pallet_number);
+
+    foreach ($detallePaletas as $detalle) {
+
+        $detalle = trim($detalle);
+
+        if (str_contains($detalle, '=')) {
+
+            [$paleta, $cantidad] = explode('=', $detalle);
+
+            $paleta   = trim($paleta);
+            $cantidad = (int) trim($cantidad);
+
+        } else {
+
+            $paleta   = trim($detalle);
+            $cantidad = $item->quantity_sent;
+
+        }
+
+        $pallets[$paleta][] = [
+            'producto' => $item->product?->name
+                        ?? $item->rawMaterial?->name
+                        ?? 'Producto',
+            'cantidad' => $cantidad,
+            'pucho'    => $item->pucho ?? 0,
+        ];
+    }
+}
+
+ksort($pallets);
+
+@endphp
+
+<div style="padding:0 20px; margin-top:30px;">
+
+@php
+$distribucionPaletas = [];
+
+foreach($order->items as $item){
+
+    if(empty($item->pallet_number)){
+        continue;
+    }
+
+    $paletas = explode(',', $item->pallet_number);
+
+    foreach($paletas as $paleta){
+
+        $paleta = trim($paleta);
+
+        if(!$paleta){
+            continue;
+        }
+
+        $distribucionPaletas[$paleta][] = [
+            'producto' => $item->product?->name
+                ?? $item->rawMaterial?->name
+                ?? 'Producto',
+
+            'cantidad' => $item->quantity_sent
+        ];
+    }
+}
+
+ksort($distribucionPaletas);
+@endphp
+
+    <div style="
+        background:#1e3a8a;
+        color:white;
+        padding:10px;
+        font-weight:bold;
+        border-radius:6px;
+        margin-bottom:15px;
+        text-align:center;
+    ">
+        📦 DISTRIBUCIÓN DE PALETAS
+    </div>
+
+    @foreach($pallets as $paleta => $productos)
+
+    @php
+        $totalPaleta = collect($productos)->sum('cantidad');
+    @endphp
+
+    <div style="
+        border:1px solid #cbd5e1;
+        border-radius:6px;
+        margin-bottom:15px;
+        overflow:hidden;
+    ">
+
+        <div style="
+            background:#1e40af;
+            color:white;
+            padding:8px 12px;
+            font-weight:bold;
+        ">
+            Paleta {{ $paleta }}
+        </div>
+
+        <table style="width:100%; border-collapse:collapse;">
+
+            <thead>
+                <tr>
+                    <th style="
+                        background:#1e3a8a;
+                        color:white;
+                        padding:6px;
+                        text-align:left;
+                    ">
+                        Producto
+                    </th>
+
+                    <th style="
+                        background:#1e3a8a;
+                        color:white;
+                        padding:6px;
+                        width:100px;
+                    ">
+                        Cajas
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach($productos as $producto)
+
+                <tr>
+                    <td style="padding:6px;">
+                        {{ $producto['producto'] }}
+                    </td>
+
+                    <td style="
+                        text-align:center;
+                        padding:6px;
+                        font-weight:bold;
+                    ">
+                        {{ $producto['cantidad'] }}
+                    </td>
+                </tr>
+
+                @endforeach
+
+                <tr style="background:#dbeafe;">
+
+                    <td style="
+                        font-weight:bold;
+                        padding:6px;
+                    ">
+                        TOTAL PALETA
+                    </td>
+
+                    <td style="
+                        text-align:center;
+                        font-weight:bold;
+                        color:#1e3a8a;
+                    ">
+                        {{ $totalPaleta }}
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    @endforeach
+
+    @if($order->order_type === 'supermercado')
+
+<div style="
+    margin:20px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+    overflow:hidden;
+">
+
+    <div style="
+        background:#1e3a8a;
+        color:white;
+        padding:10px;
+        font-weight:bold;
+    ">
+        🚚 RESUMEN LOGÍSTICO
+    </div>
+
+    <table style="width:100%; border-collapse:collapse;">
+        <thead>
+            <tr style="background:#1e40af; color:white;">
+                <th style="padding:8px;">Paletas Utilizadas</th>
+                <th style="padding:8px;">Productos</th>
+                <th style="padding:8px;">Cajas Enviadas</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td style="padding:8px; text-align:center;">
+                    {{ count($distribucionPaletas) }}
+                </td>
+
+                <td style="padding:8px; text-align:center;">
+                    {{ $order->items->count() }}
+                </td>
+
+                <td style="padding:8px; text-align:center;">
+                    {{ number_format($order->items->sum('quantity_sent')) }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
+@endif
+</div>
+    
+    Total productos: <strong>{{ $order->items->sum('quantity') }}</strong> unidades |
         Total enviado: <strong>{{ $order->items->sum('quantity_sent') }}</strong> unidades
     </div>
 
-    <div class="footer">
-        <span>DISTAN — Todo tu logística, en un solo lugar</span>
-        <span>Generado: {{ now()->format('d/m/Y H:i') }}</span>
-        <span>{{ $order->order_number }}</span>
-    </div>
 
 </body>
 </html>
