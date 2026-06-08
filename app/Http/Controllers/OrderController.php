@@ -7,10 +7,29 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class OrderController extends Controller
 {
+
+   public function labels(Order $order)
+{
+    $pdf = Pdf::loadView(
+        'orders.labels',
+        compact('order')
+    );
+
+    $pdf->setPaper(
+        [0, 0, 288, 144],
+        'portrait'
+    );
+
+    return $pdf->stream(
+        'etiquetas-'.$order->order_number.'.pdf'
+    );
+}
+
    public function index()
    {
        $orders = collect();
@@ -184,18 +203,26 @@ class OrderController extends Controller
 }
 
    public function updateItem(Request $request, Order $order)
-   {
-       $request->validate([
-           'item_id'  => 'required|exists:order_items,id',
-           'quantity' => 'required|integer|min:1',
-       ]);
+{
+    $request->validate([
+        'item_id'    => 'required|exists:order_items,id',
+        'product_id' => 'required|exists:products,id',
+        'quantity'   => 'required|integer|min:1',
+    ]);
 
 
        $item = OrderItem::findOrFail($request->item_id);
-       $item->update([
-           'quantity' => $request->quantity,
-           'subtotal' => $item->unit_price * $request->quantity,
-       ]);
+
+$product = Product::findOrFail(
+    $request->product_id
+);
+
+$item->update([
+    'product_id' => $product->id,
+    'quantity'   => $request->quantity,
+    'unit_price' => $product->price,
+    'subtotal'   => $product->price * $request->quantity,
+]);
 
 
        $subtotal = $order->items()->sum('subtotal');

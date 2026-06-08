@@ -215,6 +215,12 @@
             <span class="nav-icon">📋</span>
             <span class="nav-label">Inventario</span>
         </a>
+        <a href="{{ route('boxes.index') }}"
+            class="nav-item {{ request()->routeIs('boxes.*') ? 'active' : '' }}"
+            data-tooltip="Control de Cajas">
+                <span class="nav-icon">📦</span>
+                <span class="nav-label">Control de Cajas</span>
+            </a>
         <a href="{{ route('raw-materials.index') }}"
            class="nav-item {{ request()->routeIs('raw-materials.*') ? 'active' : '' }}"
            data-tooltip="Materias Primas">

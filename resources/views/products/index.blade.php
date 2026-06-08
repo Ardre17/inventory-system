@@ -125,7 +125,13 @@
                     </span>
                 </span>
             </div>
+<div>
+    <span style="color:#6b7280;">Peso Unitario</span><br>
 
+    <span style="font-size:0.75rem; color:#6b7280;">
+        {{ $product->unit_weight ?? 0 }} g
+    </span>
+</div>
                             {{-- Lote --}}
                             @if($product->lot)
                             <div>

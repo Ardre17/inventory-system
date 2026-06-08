@@ -114,11 +114,21 @@
                style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
     </div>
     <div>
+    <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Peso por unidad (gramos)</label>
+
+    <input
+        type="number"
+        step="0.01"
+        name="unit_weight"
+        value="{{ old('unit_weight', $product->unit_weight) }}"
+        class="w-full border rounded"
+        style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
+</div>
+    <div>
         <label style="display:block; font-weight:600; font-size:0.85rem; color:#374151; margin-bottom:0.4rem;">Cajas en stock</label>
         <input type="number" name="boxes" id="boxes"
                value="{{ old('boxes', $product->boxes) }}" step="0.01"
                style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box;"
-               readonly
                style="background:#f3f4f6; color:#6b7280;">
     </div>
 </div>

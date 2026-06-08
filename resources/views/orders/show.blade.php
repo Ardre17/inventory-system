@@ -36,7 +36,7 @@
                </div>
                <div>
                    <span style="color:#6b7280;">Total</span><br>
-                   <span style="font-weight:700; color:#7c3aed; font-size:1.1rem;">${{ number_format($order->total, 2) }}</span>
+                   <span style="font-weight:700; color:#7c3aed; font-size:1.1rem;">S/{{ number_format($order->total, 2) }}</span>
                </div>
                @if($order->notes)
                <div>
@@ -140,10 +140,10 @@
 
 
            <div style="text-align:right; margin-top:1rem; font-size:0.9rem;">
-               <div>Subtotal: <strong>${{ number_format($order->subtotal, 2) }}</strong></div>
-               <div>IGV (18%): <strong>${{ number_format($order->subtotal * 0.18, 2) }}</strong></div>
+               <div>Subtotal: <strong>S/{{ number_format($order->subtotal, 2) }}</strong></div>
+               <div>IGV (18%): <strong>S/{{ number_format($order->subtotal * 0.18, 2) }}</strong></div>
                <div style="font-size:1.2rem; color:#7c3aed; margin-top:0.25rem;">
-                   Total: <strong>${{ number_format($order->subtotal * 1.18, 2) }}</strong>
+                   Total: <strong>S/{{ number_format($order->subtotal * 1.18, 2) }}</strong>
                </div>
            </div>
        </div>
@@ -156,6 +156,20 @@
           style="background-color:#dc2626; color:white; padding:0.5rem 1.5rem; border-radius:0.5rem; font-weight:600; text-decoration:none;">
            🖨️ Descargar PDF
        </a>
+       <a
+    href="{{ route('orders.labels',$order) }}"
+    target="_blank"
+    style="
+        background:#059669;
+        color:white;
+        padding:8px 12px;
+        border-radius:6px;
+        text-decoration:none;
+        margin-left:5px;
+    "
+>
+    🏷️ Etiquetas
+</a>
    </div>
 
 
@@ -228,6 +242,40 @@
 
 
    {{-- Modal editar pedido --}}
+   <div style="margin-bottom:1rem;">
+
+    <label style="
+        font-size:0.85rem;
+        font-weight:600;
+        color:#374151;
+        display:block;
+        margin-bottom:0.5rem;
+    ">
+        Producto
+    </label>
+
+    <select
+        id="editProduct"
+        style="
+            width:100%;
+            border:1px solid #d1d5db;
+            border-radius:0.5rem;
+            padding:0.75rem;
+            font-size:0.95rem;
+        "
+    >
+
+        @foreach($products as $product)
+
+            <option value="{{ $product->id }}">
+                {{ $product->name }}
+            </option>
+
+        @endforeach
+
+    </select>
+
+</div>
    <div id="editRequestedModal"
         style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center;">
        <div style="background:white; border-radius:0.75rem; padding:1.5rem; width:90%; max-width:350px;">
@@ -315,11 +363,52 @@
        }
 
 
-       function openEditRequested(itemId, currentQty) {
-           currentEditItemId = itemId;
-           document.getElementById('reqQty').value = currentQty;
-           document.getElementById('editRequestedModal').style.display = 'flex';
-       }
+       function confirmEditRequested() {
+
+    const qty = parseInt(
+        document.getElementById('reqQty').value
+    ) || 1;
+
+    const productId = document.getElementById(
+        'editProduct'
+    ).value;
+
+    if (!currentEditItemId) return;
+
+    fetch(`/orders/{{ $order->id }}/update-item`, {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+
+        body: JSON.stringify({
+
+            item_id: currentEditItemId,
+
+            product_id: productId,
+
+            quantity: qty
+
+        })
+
+    })
+    .then(r => r.json())
+    .then(data => {
+
+        if (data.success) {
+
+            closeEditModal();
+
+            window.location.reload();
+
+        }
+
+    });
+
+}
 
 
        function changeReqQty(delta) {
@@ -335,14 +424,51 @@
 
 
        function confirmEditRequested() {
-           const qty = parseInt(document.getElementById('reqQty').value) || 1;
-           if (!currentEditItemId) return;
-           fetch(`/orders/{{ $order->id }}/update-item`, {
-               method: 'POST',
-               headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-               body: JSON.stringify({ item_id: currentEditItemId, quantity: qty })
-           }).then(r => r.json()).then(data => { if (data.success) { closeEditModal(); window.location.reload(); } });
-       }
+
+    const qty = parseInt(
+        document.getElementById('reqQty').value
+    ) || 1;
+
+    const productId = document.getElementById(
+        'editProduct'
+    ).value;
+
+    if (!currentEditItemId) return;
+
+    fetch(`/orders/{{ $order->id }}/update-item`, {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+
+        body: JSON.stringify({
+
+            item_id: currentEditItemId,
+
+            product_id: productId,
+
+            quantity: qty
+
+        })
+
+    })
+    .then(r => r.json())
+    .then(data => {
+
+        if (data.success) {
+
+            closeEditModal();
+
+            window.location.reload();
+
+        }
+
+    });
+
+}
 
 
        document.getElementById('dispatchModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });

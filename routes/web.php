@@ -17,7 +17,10 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Order;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BoxController;
+use App\Http\Controllers\BoxMovementController;
 
+Route::resource('boxes', BoxController::class);
 
 Route::get('/', function () {
    return redirect()->route('dashboard');
@@ -26,6 +29,10 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
 
+Route::post(
+    '/boxes/movement',
+    [BoxMovementController::class, 'store']
+)->name('boxes.movement.store');
 
    Route::get('/dashboard', function () {
        $totalProducts    = Product::count();
@@ -55,6 +62,8 @@ Route::middleware(['auth'])->group(function () {
 
    Route::post('orders/{order}/dispatch', [OrderController::class, 'dispatch'])->name('orders.dispatch');
    Route::get('orders/barcode', [OrderController::class, 'findByBarcode'])->name('orders.barcode');
+
+   Route::get('orders/{order}/labels', [OrderController::class, 'labels'])->name('orders.labels');
 
 
    Route::get('supplies', [SupplyController::class, 'index'])->name('supplies.index');
@@ -86,9 +95,9 @@ Route::middleware(['auth'])->group(function () {
 
 
 // Importación masiva de órdenes - PÚBLICA (sin auth)
-Route::get('orders/import', [App\Http\Controllers\OrderImportController::class, 'index'])->name('orders.import');
-Route::post('orders/import', [App\Http\Controllers\OrderImportController::class, 'import'])->name('orders.import.store');
-Route::get('orders/import/template', [App\Http\Controllers\OrderImportController::class, 'downloadTemplate'])->name('orders.import.template');
+//Route::get('orders/import', [App\Http\Controllers\OrderImportController::class, 'index'])->name('orders.import');
+//Route::post('orders/import', [App\Http\Controllers\OrderImportController::class, 'import'])->name('orders.import.store');
+//oute::get('orders/import/template', [App\Http\Controllers\OrderImportController::class, 'downloadTemplate'])->name('orders.import.template');
 
 
 // Pruebas

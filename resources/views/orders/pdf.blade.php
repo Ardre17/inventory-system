@@ -320,8 +320,27 @@ ksort($distribucionPaletas);
     @foreach($pallets as $paleta => $productos)
 
     @php
+
         $totalPaleta = collect($productos)->sum('cantidad');
-    @endphp
+
+        $pesoTotalPaleta = 0;
+
+        foreach($productos as $producto){
+
+            $itemPeso = $order->items
+                ->first(function($i) use ($producto){
+                    return ($i->product?->name ?? $i->rawMaterial?->name) === $producto['producto'];
+                });
+
+            if($itemPeso && $itemPeso->product){
+                $pesoTotalPaleta += (
+                    ($itemPeso->product->unit_weight ?? 0)
+                    * $producto['cantidad']
+                ) / 1000;
+            }
+        }
+
+@endphp
 
     <div style="
         border:1px solid #cbd5e1;
@@ -352,14 +371,23 @@ ksort($distribucionPaletas);
                         Producto
                     </th>
 
-                    <th style="
-                        background:#1e3a8a;
-                        color:white;
-                        padding:6px;
-                        width:100px;
-                    ">
-                        Cajas
-                    </th>
+                   <th style="
+    background:#1e3a8a;
+    color:white;
+    padding:6px;
+    width:100px;
+">
+    Unidades
+</th>
+
+<th style="
+    background:#1e3a8a;
+    color:white;
+    padding:6px;
+    width:120px;
+">
+    Peso (Kg)
+</th>
                 </tr>
             </thead>
 
@@ -367,40 +395,74 @@ ksort($distribucionPaletas);
 
                 @foreach($productos as $producto)
 
-                <tr>
-                    <td style="padding:6px;">
-                        {{ $producto['producto'] }}
-                    </td>
+@php
 
-                    <td style="
-                        text-align:center;
-                        padding:6px;
-                        font-weight:bold;
-                    ">
-                        {{ $producto['cantidad'] }}
-                    </td>
-                </tr>
+$itemPeso = $order->items
+    ->first(function($i) use ($producto) {
+        return ($i->product?->name ?? $i->rawMaterial?->name) === $producto['producto'];
+    });
 
-                @endforeach
+$pesoKg = 0;
 
-                <tr style="background:#dbeafe;">
+if($itemPeso && $itemPeso->product){
+    $pesoKg = (($itemPeso->product->unit_weight ?? 0) * $producto['cantidad']) / 1000;
+}
 
-                    <td style="
-                        font-weight:bold;
-                        padding:6px;
-                    ">
-                        TOTAL PALETA
-                    </td>
+@endphp
 
-                    <td style="
-                        text-align:center;
-                        font-weight:bold;
-                        color:#1e3a8a;
-                    ">
-                        {{ $totalPaleta }}
-                    </td>
+<tr>
 
-                </tr>
+    <td style="padding:6px;">
+        {{ $producto['producto'] }}
+            </td>
+
+            <td style="
+                text-align:center;
+                padding:6px;
+                font-weight:bold;
+            ">
+                {{ number_format($producto['cantidad']) }}
+            </td>
+
+            <td style="
+                text-align:center;
+                padding:6px;
+                font-weight:bold;
+                color:#1e3a8a;
+            ">
+                {{ number_format($pesoKg,2) }}
+            </td>
+
+        </tr>
+
+        @endforeach
+
+              <tr style="background:#dbeafe;">
+
+    <td style="
+        font-weight:bold;
+        padding:6px;
+    ">
+        TOTAL PALETA
+    </td>
+
+    <td style="
+        text-align:center;
+        font-weight:bold;
+        color:#1e3a8a;
+    ">
+        {{ number_format($totalPaleta) }}
+    </td>
+
+    <td style="
+        text-align:center;
+        font-weight:bold;
+        color:#059669;
+    ">
+        {{ number_format($pesoTotalPaleta,2) }} Kg
+    </td>
+
+</tr>
 
             </tbody>
 
@@ -414,53 +476,216 @@ ksort($distribucionPaletas);
 
 <div style="
     margin:20px;
+    border:1px solid #0f172a;
+    border-radius:8px;
+    overflow:hidden;
+">
+
+    <div style="
+    background: #cbd5e1;
+    color:white;
+    padding:10px;
+    font-weight:bold;
+    text-align:center;
+    letter-spacing:1px;
+">
+    🚚 RESUMEN LOGÍSTICO
+</div>
+     @php
+
+$pesoTotalDespacho = 0;
+
+foreach($order->items as $item){
+
+    if($item->product){
+
+        $pesoTotalDespacho += (
+            ($item->product->unit_weight ?? 0)
+            * $item->quantity_sent
+        ) / 1000;
+
+    }
+
+}
+
+@endphp
+    <table style="width:100%; border-collapse:collapse;">
+        <thead>
+           <tr>
+
+   <table style="width:100%; border-collapse:collapse;">
+
+    <thead>
+        <tr style="background:#2563eb; color:white;">
+            <th style="padding:8px;">Paletas</th>
+            <th style="padding:8px;">Productos</th>
+            <th style="padding:8px;">Unidades</th>
+            <th style="padding:8px;">Peso Total (Kg)</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+
+            <td style="padding:8px; text-align:center;">
+                {{ count($distribucionPaletas) }}
+            </td>
+
+            <td style="padding:8px; text-align:center;">
+                {{ $order->items->count() }}
+            </td>
+
+            <td style="padding:8px; text-align:center;">
+                {{ number_format($order->items->sum('quantity_sent')) }}
+            </td>
+
+            <td style="padding:8px; text-align:center; font-weight:bold; color:#059669;">
+                {{ number_format($pesoTotalDespacho,2) }} Kg
+            </td>
+
+        </tr>
+    </tbody>
+
+</table>
+
+</div>
+
+@endif
+</div>
+@php
+$productosNoEnviados = $order->items->filter(function($item){
+    return $item->quantity_sent <= 0;
+});
+@endphp
+
+@if($productosNoEnviados->count())
+
+<div style="
+    margin:20px;
+    border:1px solid #fecaca;
+    border-radius:8px;
+    overflow:hidden;
+">
+
+    <div style="
+        background:#dc2626;
+        color:black;
+        padding:10px;
+        font-weight:bold;
+    ">
+        ⚠ PRODUCTOS NO DESPACHADOS
+    </div>
+
+    <table style="width:100%; border-collapse:collapse;">
+
+        <thead>
+            <tr style="background:#fee2e2;">
+                <th style="padding:8px; text-align:left;">Producto</th>
+                <th style="padding:8px;">Solicitado</th>
+                <th style="padding:8px;">Enviado</th>
+                <th style="padding:8px;">Faltante</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        @foreach($productosNoEnviados as $item)
+
+        <tr>
+
+            <td style="padding:8px;">
+                {{ $item->product?->name ?? $item->rawMaterial?->name }}
+            </td>
+
+            <td style="padding:8px; text-align:center;">
+                {{ number_format($item->quantity) }}
+            </td>
+
+            <td style="
+                padding:8px;
+                text-align:center;
+                color:#dc2626;
+                font-weight:bold;
+            ">
+                0
+            </td>
+
+            <td style="
+                padding:8px;
+                text-align:center;
+                font-weight:bold;
+            ">
+                {{ number_format($item->quantity) }}
+            </td>
+
+        </tr>
+
+        @endforeach
+
+        </tbody>
+
+    </table>
+
+</div>
+
+@endif
+    
+    @php
+
+$totalSolicitado = $order->items->sum('quantity');
+$totalEnviado    = $order->items->sum('quantity_sent');
+
+$porcentajeCumplimiento = $totalSolicitado > 0
+    ? ($totalEnviado / $totalSolicitado) * 100
+    : 0;
+
+$colorCumplimiento =
+    $porcentajeCumplimiento >= 100 ? '#059669' :
+    ($porcentajeCumplimiento >= 80 ? '#d97706' : '#dc2626');
+
+@endphp
+
+<div style="
+    margin:20px;
     border:1px solid #cbd5e1;
     border-radius:8px;
     overflow:hidden;
 ">
 
     <div style="
-        background:#1e3a8a;
+        background:#0f172a;
         color:white;
         padding:10px;
         font-weight:bold;
     ">
-        🚚 RESUMEN LOGÍSTICO
+        📊 CUMPLIMIENTO DEL DESPACHO
     </div>
 
     <table style="width:100%; border-collapse:collapse;">
-        <thead>
-            <tr style="background:#1e40af; color:white;">
-                <th style="padding:8px;">Paletas Utilizadas</th>
-                <th style="padding:8px;">Productos</th>
-                <th style="padding:8px;">Cajas Enviadas</th>
-            </tr>
-        </thead>
+        <tr>
+            <td style="padding:10px; text-align:center;">
+                <strong>Solicitado</strong><br>
+                {{ number_format($totalSolicitado) }}
+            </td>
 
-        <tbody>
-            <tr>
-                <td style="padding:8px; text-align:center;">
-                    {{ count($distribucionPaletas) }}
-                </td>
+            <td style="padding:10px; text-align:center;">
+                <strong>Enviado</strong><br>
+                {{ number_format($totalEnviado) }}
+            </td>
 
-                <td style="padding:8px; text-align:center;">
-                    {{ $order->items->count() }}
-                </td>
-
-                <td style="padding:8px; text-align:center;">
-                    {{ number_format($order->items->sum('quantity_sent')) }}
-                </td>
-            </tr>
-        </tbody>
+            <td style="
+                padding:10px;
+                text-align:center;
+                font-weight:bold;
+                color:{{ $colorCumplimiento }};
+                font-size:16px;
+            ">
+                {{ number_format($porcentajeCumplimiento,2) }}%
+            </td>
+        </tr>
     </table>
 
 </div>
-
-@endif
-</div>
-    
-    Total productos: <strong>{{ $order->items->sum('quantity') }}</strong> unidades |
-        Total enviado: <strong>{{ $order->items->sum('quantity_sent') }}</strong> unidades
     </div>
 
 

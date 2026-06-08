@@ -116,6 +116,16 @@
                         <input type="number" name="boxes" id="boxes" value="{{ old('boxes', 0) }}" step="0.01" readonly
                                style="width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.9rem; box-sizing:border-box; background:#f9fafb; color:#6b7280;">
                     </div>
+                    <div>
+    <label>Peso por unidad (gramos)</label>
+
+    <input
+        type="number"
+        step="0.01"
+        name="unit_weight"
+        class="w-full border rounded"
+        placeholder="Ejemplo: 420">
+</div>
                 </div>
 
                 <div style="margin-bottom:1rem;">

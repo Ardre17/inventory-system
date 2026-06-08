@@ -9,7 +9,7 @@ class Product extends Model
     'category_id', 'supplier_id', 'name', 'sku', 'barcode',
     'lot', 'rotation', 'production_date', 'expiration_date',
     'description', 'price', 'cost', 'stock', 'boxes',
-    'units_per_box', 'stock_min', 'unit', 'inventory_date',
+    'units_per_box', 'unit_weight','stock_min', 'unit', 'inventory_date',
     'image_url', 'active'
 ];
 

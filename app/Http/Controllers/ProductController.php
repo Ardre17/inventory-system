@@ -43,6 +43,7 @@ class ProductController extends Controller
             'price'       => 'required|numeric|min:0',
             'stock'       => 'required|integer|min:0',
             'stock_min'   => 'required|integer|min:0',
+            'unit_weight' => 'nullable|numeric|min:0',
         ]);
 
         $product = Product::create($request->all());
@@ -67,6 +68,7 @@ class ProductController extends Controller
             'price'       => 'required|numeric|min:0',
             'stock'       => 'required|integer|min:0',
             'stock_min'   => 'required|integer|min:0',
+            'unit_weight' => 'nullable|numeric|min:0',
         ]);
         $product->update($request->all());
         return redirect()->route('products.index')
